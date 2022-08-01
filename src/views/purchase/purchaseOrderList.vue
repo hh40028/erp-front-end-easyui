@@ -47,14 +47,13 @@
                 </GridColumn>
                 <GridColumn title='平台' width="40" align="center">
                     <template slot="body" slot-scope="scope">
-                        <img v-if="!scope.row.offlineOrder" src="../../assets/images/icons8-download_2.png" style="height: 25px">
-<!--                        <span v-if="scope.row.offlineOrder">线上</span>-->
-<!--                        <span v-if="!scope.row.offlineOrder">线下</span>-->
+                        <img v-if="!scope.row.offlineOrder" src="../../assets/images/jd.jpg" style="height: 16px;line-height: 32px;border-radius: 3px">
                     </template>
                 </GridColumn>
+                <GridColumn field='number' title='单据编号' width="140" align="center"></GridColumn>
                 <GridColumn field='supplierName' title='供应商' width="120" align="left"></GridColumn>
-                <GridColumn field='orderFormId' title='订单编号' width="120" align="left"></GridColumn>
-                <GridColumn field='wareid' title='商品编号' width="120" align="left"></GridColumn>
+                <GridColumn field='customOrderId' title='订单编号' width="150" align="center"></GridColumn>
+                <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
                 <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
                 <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
                 <GridColumn field="cost" title='单价' width="80" align="right">

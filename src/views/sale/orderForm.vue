@@ -111,6 +111,7 @@
                                             </div>
                                         </template>
                                     </GridColumn>
+                                    <GridColumn field='number' title='单据编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='upc' title='商品UPC编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
@@ -305,6 +306,8 @@
         </LayoutPanel>
         <Dialog bodyCls="f-column" ref="changeCommodityDlg" closed
                 :title="obj.customOrderId+'-换货操作'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'80%',height:'80%'}"
                 :modal="true">
             <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="true">
@@ -366,6 +369,8 @@
         </Dialog>
         <Dialog bodyCls="f-column" ref="selectCommoditySupplierDlg" closed
                 :title="'选择一个供应商'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'50vW',height:'50vH'}"
                 :modal="true">
             <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="true">
@@ -393,6 +398,8 @@
         <Dialog bodyCls="f-column" ref="editDlg" closed
                 :title="'编辑信息'"
                 :dialogStyle="{width:'50vW',height:'40vH'}"
+                :draggable="true"
+                :resizable="true"
                 :modal="true">
             <div class="f-full">
                 <table class="table" style="width: 100%">
@@ -769,6 +776,7 @@ export default {
         },
         modifyDirectly() {
             let vm = this;
+            this.$refs.editDlg.close();
             this.confirm('直接更改发货信息,确认吗?', function () {
                 vm.getData("orderFormItem/modifyDirectly", {obj:JSON.stringify(vm.editObj)}, function (data) {
                     vm.editObj = {};

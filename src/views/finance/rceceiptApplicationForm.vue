@@ -21,6 +21,7 @@
                       :total="total"
                       :loading="loading"
                       :pageNumber="pageNumber"
+                      @rowExpand="loadItems($event)"
                       :pageSize="pageSize"
                       selectionMode="single"
                       @selectionChange="selectObj($event)"
@@ -40,51 +41,48 @@
                         <span v-if="scope.row.processId && scope.row.processStatus">已付款</span>
                     </template>
                 </GridColumn>
-                <GridColumn field='number' title='单据编号' width="160" align="center"></GridColumn>
-                <GridColumn field='unitName' title='往来单位' width="260" align="left"></GridColumn>
+                <GridColumn field='number' title='单据编号' width="170" align="center"></GridColumn>
+                <GridColumn field='customername' title='往来单位' width="260" align="left"></GridColumn>
                 <GridColumn title='申请金额' width="150" align="right">
                     <template slot="body" slot-scope="scope">
                         {{ toMoney(scope.row.applicationAmount, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn title='实付金额' width="150" align="right">
+                <GridColumn title='实收金额' width="150" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.actualPaymentAmount, '') }}
+                        {{ toMoney(scope.row.amountReceived, '') }}
                     </template>
                 </GridColumn>
                 <GridColumn field='applicationTime' title='申请时间' width="220" align="center"></GridColumn>
                 <GridColumn field='remark' title='备注' align="left"></GridColumn>
                 <template slot="detail" slot-scope="scope" :border="false">
-                    <div style="padding: 3px;background-color: #fff3b1">
+                    <div style="padding: 3px;background-color: #fef7ce">
                         <DataGrid :data="scope.row.items"
                                   :border="false"
                                   :rowCss="getItemRowCss"
                                   class="f-full"
                                   :columnResizing="true">
-                            <GridColumn field='customOrderId' title='订单编号' width="160" align="center"></GridColumn>
-                            <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
-                            <GridColumn field='commodityName' title='商品名称' width="220" align="left"></GridColumn>
-                            <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                            <GridColumn field="cost" title='单价' width="100" align="right">
-                                <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost, '') }}
-                                </template>
-                            </GridColumn>
+                            <GridColumn field='customOrderId' title='订单编号' width="140" align="center"></GridColumn>
+<!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
+                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
+                            <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
+                            <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
                             <GridColumn title='合计金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                                    {{ toMoney(scope.row.jdPrice, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='logisticsCompanyName' title='物流公司' width="150" align="center"></GridColumn>
-                            <GridColumn field='logisticsNumber' title='物流单号' width="150" align="center"></GridColumn>
-                            <GridColumn field='createTime' title='递交时间' width="150" align="center"></GridColumn>
-                            <GridColumn field='deliveryTime' title='发货时间' width="150" align="center"></GridColumn>
                             <GridColumn title='结算金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
                                     {{ toMoney(scope.row.settlement, '') }}
                                 </template>
                             </GridColumn>
-                        </DataGrid>
+                            <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
+                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
+                            <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
+                            <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
+                          </DataGrid>
                     </div>
                 </template>
             </DataGrid>
@@ -128,7 +126,7 @@ export default {
         }
     },
     components: {
-        filterList, selectOrganizationUser, viewTasks
+        filterList, selectOrganizationUser,viewTasks
     },
     created: function () {
         this.loadPage(this.pageNumber, this.pageSize);
@@ -140,7 +138,7 @@ export default {
         loadPage(pageNumber, pageSize) {
             this.loading = true;
             let vm = this;
-            this.$root.getData("paymentRequestForm/getQueryList", {
+            this.$root.getData("receiptApplicationForm/getQueryList", {
                 limit: pageSize,
                 offset: pageSize * (pageNumber - 1),
                 sort: "id",
@@ -161,8 +159,14 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
+        loadItems(obj){
+            let vm = this;
+            this.getData("receiptApplicationFormChild/getList", {pid:obj.id}, function (data) {
+                vm.$set(obj,'items',data);
+            })
+        },
         add() {
-            this.$router.push('newPaymentRequestForm');
+            this.$router.push('newRceceiptApplicationForm');
         },
         send() {
             if (!this.obj.id) {
@@ -178,7 +182,7 @@ export default {
             let vm = this;
             this.$refs.selectUserDlg.close();
             this.confirm('发送' + obj.username + '审核,确认吗?', function () {
-                vm.getData("paymentRequestForm/startProcess", {id: vm.obj.id, sprid: obj.id}, function (data) {
+                vm.getData("receiptApplicationForm/startProcess", {id: vm.obj.id, sprid: obj.id}, function (data) {
                     vm.msg('发送成功');
                     vm.loadPage(vm.pageNumber, vm.pageSize);
                 })
@@ -188,35 +192,35 @@ export default {
             if (row.processStatus) {
                 return {background: "#e1ffe0"};
             }
-            if (row.processId > 0 && !row.processStatus) {
+            if (row.processId>0 && !row.processStatus) {
                 return {background: "#fcf5d1"};
             }
             return null;
         },
         getItemRowCss(row) {
-            if (parseFloat(row.settlement) === parseFloat(row.cost) * parseFloat(row.wareNum)) {
+            if (parseFloat(row.settlement)===parseFloat(row.jdPrice)) {
                 return {background: "#e1ffe0"};
             }
             return null;
         },
-        removeObj() {
+        removeObj(){
             let vm = this;
             this.confirm("删除申请单,确认吗?", function () {
-                vm.getData("paymentRequestForm/delete", {id: vm.obj.id}, function (data) {
-                    vm.obj = {};
+                vm.getData("receiptApplicationForm/delete", {id:vm.obj.id}, function (data) {
+                    vm.obj={};
                     vm.msg('操作成功');
                     vm.loadPage(vm.pageNumber, vm.pageSize);
                 })
             })
         },
-        view() {
+        view(){
             this.$refs.viewTasksDlg.open();
             this.$refs.viewTasksCom.loadList();
         },
-        cancel() {
+        cancel(){
             let vm = this;
             this.confirm("撤销流程,确认吗?", function () {
-                vm.getData("paymentRequestForm/cancelProcess", {id: vm.obj.id}, function (data) {
+                vm.getData("receiptApplicationForm/cancelProcess", {id:vm.obj.id}, function (data) {
                     vm.msg('流程已撤销成功');
                     vm.obj={};
                     vm.loadPage(vm.pageNumber, vm.pageSize);

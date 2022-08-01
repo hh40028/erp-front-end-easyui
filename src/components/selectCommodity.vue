@@ -68,6 +68,7 @@ export default {
         }
     },
     created: function () {
+        this.loadPage(this.pageNumber, this.pageSize);
     },
     components: {
         filterList

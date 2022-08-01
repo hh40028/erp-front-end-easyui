@@ -3,7 +3,6 @@
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'8px',lineHeight:'30px'}" :border="false">
                 <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>
-                <LinkButton iconCls="icon-edit" :plain="true" @click="edit" :disabled="!obj.id">编辑</LinkButton>
                 <div class="pull-right">
                     <filterList @filterLoad="filter"></filterList>
                 </div>
@@ -21,6 +20,7 @@
                       @selectionChange="selectItem($event)"
                       :pageNumber="pageNumber"
                       :pageSize="pageSize"
+                      @rowExpand="loadItems($event)"
                       @pageChange="onPageChange($event)"
                       :pagination="true"
                       :pagePosition="'bottom'">
@@ -29,11 +29,36 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn field="name" title="客户名称" align="center"></GridColumn>
-                <GridColumn field="consigneeName" title="联系人" align="center"></GridColumn>
-                <GridColumn field="phoneNumber" title="手机号码" align="center"></GridColumn>
-                <GridColumn field="telephone" title="固定电话" align="center"></GridColumn>
-                <GridColumn field="address" title="地址" align="left"></GridColumn>
+                <GridColumn :expander="true" width="30"></GridColumn>
+                <GridColumn field="number" title="单据编号" align="center"></GridColumn>
+                <GridColumn field="warehouseName" title="入货仓库" align="center"></GridColumn>
+                <GridColumn field="entrydate" title="入库日期" align="center"></GridColumn>
+                <GridColumn field="username" title="操作人" align="center"></GridColumn>
+                <GridColumn field="remark" title="摘要说明" align="left"></GridColumn>
+                <template slot="detail" slot-scope="scope" :border="false">
+                    <div style="padding: 3px;background-color: #fef7ce">
+                        <DataGrid :data="scope.row.items" :border="false"
+                                  class="f-full"
+                                  :columnResizing="true">
+                            <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
+                                <template slot="body" slot-scope="scope">
+                                    {{ scope.rowIndex + 1 }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='wareid' title='商品编号' width="160" align="center"></GridColumn>
+                            <GridColumn field='commodityName' title='商品名称' align="left"></GridColumn>
+                            <GridColumn field='zh_brand' title='品牌名称' align="center" width="100"></GridColumn>
+                            <GridColumn field='model' title='规格型号' width="100" align="center"></GridColumn>
+                            <GridColumn field="sku_unit" title='商品单位' width="80" align="center"></GridColumn>
+                            <GridColumn field="incount" title='入库数量' width="150" align="center"></GridColumn>
+                            <GridColumn field="inprice" title='入库单价' width="150" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.inprice, '') }}
+                                </template>
+                            </GridColumn>
+                        </DataGrid>
+                    </div>
+                </template>
             </DataGrid>
         </LayoutPanel>
         <Dialog ref="editDlg" closed
@@ -102,7 +127,7 @@ export default {
         loadPage(pageNumber, pageSize) {
             this.loading = true;
             let vm = this;
-            this.$root.getData("customer/getQueryList", {
+            this.$root.getData("directstorage/getQueryList", {
                 limit: pageSize,
                 offset: pageSize * (pageNumber - 1),
                 sort: "id",
@@ -115,7 +140,7 @@ export default {
                     vm.data.push(e);
                 })
                 vm.loading = false;
-                vm.obj={};
+                vm.obj = {};
             })
         },
         filter(filterString) {
@@ -126,25 +151,18 @@ export default {
             this.obj = this.clone(obj);
         },
         add() {
-            this.obj = {};
-            this.$refs.editDlg.open();
+            this.$router.push('newDirectstorage');
         },
         edit() {
             this.$refs.editDlg.open();
         },
-        save() {
+        loadItems(obj){
             let vm = this;
-            this.getData("customer/save", this.obj, function (data) {
-                vm.$refs.editDlg.close();
-                vm.loadPage(vm.pageNumber, vm.pageSize);
+            this.getData("directstoragechild/getMaps", {did:obj.id}, function (data) {
+                vm.$set(obj,'items',data);
+                console.log(data);
             })
         },
-        changeStatus(obj){
-            let vm = this;
-            this.getData("customer/save", obj, function (data) {
-                vm.loadPage(vm.pageNumber, vm.pageSize);
-            })
-        }
     }
 }
 </script>

@@ -26,7 +26,7 @@
                 <div style="text-align: center;margin-bottom: 10px;padding-bottom: 10px;font-size: 14px">{{ menu.text }}</div>
             </div>
         </LayoutPanel>
-        <LayoutPanel region="center" style="height: 100%" :border="true">
+        <LayoutPanel region="center" style="height: 100%;" :border="true">
             <router-view/>
             <login></login>
         </LayoutPanel>

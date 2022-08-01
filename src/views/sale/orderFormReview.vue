@@ -27,16 +27,6 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn field="status" :width="50" align="center" :frozen="true">
-                    <template slot="header" slot-scope="scope">
-                        <input type="checkbox" v-model="allSelected"
-                               @click="all">
-                    </template>
-                    <template slot="body" slot-scope="scope">
-                        <input type="checkbox" v-model="scope.row.selected"
-                               @click="scope.row.selected=!scope.row.selected">
-                    </template>
-                </GridColumn>
                 <GridColumn field='customOrderId' title='订单编号' width="120" align="center" :frozen="true"></GridColumn>
                 <GridColumn field='pin' title='下单账号' width="120" align="center"></GridColumn>
                 <GridColumn field='pay' title='支付金额' width="120" align="center"></GridColumn>
@@ -79,39 +69,14 @@
         </LayoutPanel>
         <LayoutPanel region="south" style="height:30%;" bodyCls="f-column" :border="false">
             <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
-                <LayoutPanel region="north" :border="false">
-                    <Panel :bodyStyle="{padding:'5px'}">
-
-                        <TextBox style="width:200px;height:30px;margin-right: 10px" readonly v-model="obj.orderFormId">
-                            <Addon align="left">
-                                <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">订单编号</LinkButton>
-                            </Addon>
-                        </TextBox>
-                        <TextBox style="width:200px;height:30px;margin-right: 10px" readonly v-model="obj.customerScreenName">
-                            <Addon align="left">
-                                <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">网名</LinkButton>
-                            </Addon>
-                        </TextBox>
-                        <TextBox style="width:200px;height:30px;margin-right: 10px" readonly v-model="obj.addressee">
-                            <Addon align="left">
-                                <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">收货人</LinkButton>
-                            </Addon>
-                        </TextBox>
-                        <TextBox style="width:400px;height:30px;margin-right: 10px" readonly v-model="obj.address">
-                            <Addon align="left">
-                                <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">地址</LinkButton>
-                            </Addon>
-                        </TextBox>
-                    </Panel>
-                </LayoutPanel>
                 <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
-
                     <Tabs :plain="false" :narrow="false" :justified="false" style="height:100%" bodyCls="f-column">
                         <TabPanel :title="'货品列表'" bodyCls="f-column">
                             <Panel class="f-full" :border="false" bodyCls="f-column">
                                 <DataGrid :data="items" :border="false"
                                           :columnResizing="true"
                                           class="f-full">
+                                    <GridColumn field='number' title='单据编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='upc' title='商品UPC编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='commodityName' title='商品名称' width="120" align="center"></GridColumn>
@@ -125,8 +90,6 @@
                                     <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
                                     <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
                                     <GridColumn field='deliveryTime' title='发货时间' width="120" align="center"></GridColumn>
-                                    <!--                                    <GridColumn field='deliveryStatus' title='发货' width="120" align="center"></GridColumn>-->
-                                    <!--                                    <GridColumn field='finishUserName' title='完成人' width="120" align="center"></GridColumn>-->
                                 </DataGrid>
                             </Panel>
                         </TabPanel>

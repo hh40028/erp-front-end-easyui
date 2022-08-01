@@ -38,6 +38,8 @@
             </DataGrid>
             <Dialog ref="d1" closed
                     :title="'编辑商品信息'"
+                    :draggable="true"
+                    :resizable="true"
                     :dialogStyle="{width:'300px',height:'260px'}"
                     :modal="true">
                 <div class="col-12 p-t-15 p-l-15 p-r-15">

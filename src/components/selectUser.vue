@@ -4,6 +4,8 @@
 
         <Dialog ref="selectUserDlg" closed bodyCls="f-column"
                 :title="'选择'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'60vW',height:'60vh'}"
                 :modal="true">
             <Panel :bodyStyle="{padding:'5px'}" :border="false">

@@ -2,7 +2,7 @@
     <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
-                <LinkButton iconCls="icon-add" :plain="true" @click="newPayment">开单</LinkButton>
+                <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>
                 <div class="pull-right">
                     <filterList @filterLoad="filter"></filterList>
                 </div>
@@ -16,9 +16,10 @@
                       :total="total"
                       selectionMode="single"
                       :loading="loading"
+                      @rowExpand="loadItems($event)"
                       @selectionChange="selectObj($event)"
                       :pageNumber="pageNumber"
-                      @rowExpand="loadItem($event)"
+                      :showFooter="true"
                       :pageSize="pageSize"
                       @pageChange="onPageChange($event)"
                       :pagination="true"
@@ -30,51 +31,50 @@
                 </GridColumn>
                 <GridColumn :expander="true" width="30"></GridColumn>
                 <GridColumn field='number' title='单据编号' width="140" align="center"></GridColumn>
-                <GridColumn field='unitName' title='单位名称' width="220" align="center"></GridColumn>
-                <GridColumn field='accountName' title='付款账户' width="220" align="center"></GridColumn>
-                <GridColumn title='付款金额' width="120" align="right">
+                <GridColumn field='unitname' title='往来单位' width="220" align="center"></GridColumn>
+                <GridColumn field='accountname' title='收款账户' width="180" align="center"></GridColumn>
+                <GridColumn title='收款金额(元)' width="180" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.paymentAmount, '') }}
+                        {{ toMoney(scope.row.amount, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn field='paymentDate' title='付款日期' width="180" align="center"></GridColumn>
-                <GridColumn field='username' title='经办人' width="120" align="center"></GridColumn>
-                <GridColumn field='remark' title='摘要' align="left"></GridColumn>
+                <GridColumn title='优惠金额(元)' width="180" align="right">
+                    <template slot="body" slot-scope="scope">
+                        {{ toMoney(scope.row.wipezero, '') }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='receiptdate' title='收款日期' width="180" align="center"></GridColumn>
+                <GridColumn field='username' title='收款人' width="100" align="center"></GridColumn>
+                <GridColumn field='remark' title='摘要说明' align="left"></GridColumn>
                 <template slot="detail" slot-scope="scope" :border="false">
-                    <div style="padding: 3px;background-color: #fff3b1">
-                        <DataGrid  v-if="scope.row.list.length>0"
-                                   :data="scope.row.list"
-                                   :border="false"
+                    <div style="padding: 3px;background-color: #fef7ce">
+                        <DataGrid :data="scope.row.items"
+                                  :border="false"
+                                  :rowCss="getItemRowCss"
                                   class="f-full"
-                                   :rowCss="getItemRowCss"
                                   :columnResizing="true">
-                            <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
-                                <template slot="body" slot-scope="scope">
-                                    {{ scope.rowIndex + 1 }}
-                                </template>
-                            </GridColumn>
-                            <GridColumn field='customOrderId' title='订单编号' width="160" align="center"></GridColumn>
-                            <GridColumn field='commodityName' title='商品名称' align="left"></GridColumn>
-                            <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                            <GridColumn field="cost" title='单价' width="100" align="right">
-                                <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost, '') }}
-                                </template>
-                            </GridColumn>
+                            <GridColumn field='customOrderId' title='订单编号' width="140" align="center"></GridColumn>
+                            <!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
+                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
+                            <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
+                            <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
                             <GridColumn title='合计金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                                    {{ toMoney(scope.row.jdPrice, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn title='结算金额' align="right" width="120">
+                            <GridColumn title='结算金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
                                     {{ toMoney(scope.row.settlement, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='createTime' title='递交时间' width="200" align="center"></GridColumn>
-                            <GridColumn field='deliveryTime' title='发货时间' width="200" align="center"></GridColumn>
-                       </DataGrid>
-                        <div style="text-align: center;font-size: 20px;color:orange;line-height: 30px" v-if="scope.row.list.length===0">无结算单据</div>
+                            <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
+                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
+                            <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
+                            <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
+                        </DataGrid>
+                        <div style="text-align: center;font-size: 20px;color:#000000;line-height: 30px" v-if="scope.row.items.length===0">无结算单据</div>
                     </div>
                 </template>
             </DataGrid>
@@ -112,21 +112,18 @@ export default {
         loadPage(pageNumber, pageSize) {
             this.loading = true;
             let vm = this;
-            this.$root.getData("paymentOrder/getQueryList", {
+            this.$root.getData("receiptOrder/getQueryList", {
                 limit: pageSize,
                 offset: pageSize * (pageNumber - 1),
                 sort: "id",
                 direction: "desc",
-                filterString: this.filterString,
-                deliveryStatus: false
+                filterString: this.filterString
             }, function (data) {
                 vm.total = data.total;
                 vm.data = [];
                 data.children.forEach(function (e) {
-                    vm.$set(e, 'selected', false);
                     vm.data.push(e);
                 })
-                vm.allSelected = false;
                 vm.loading = false;
             })
         },
@@ -137,23 +134,20 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
-        newPayment() {
-            this.$router.push('newPayment');
-        },
-        view(){
-            this.$refs.viewDlg.open();
+        loadItems(obj){
+            let vm = this;
+            this.getData("orderForm/getOrderFormByReceiptOrderId", {receiptOrderId:obj.id}, function (data) {
+                vm.$set(obj,'items',data);
+            })
         },
         getItemRowCss(row) {
-            if (parseFloat(row.settlement)===parseFloat(row.cost)*parseFloat(row.wareNum)) {
+            if (parseFloat(row.settlement)===parseFloat(row.jdPrice)) {
                 return {background: "#e1ffe0"};
             }
             return null;
         },
-        loadItem(row){
-            let vm=this;
-            this.getData("supplierPurchaseOrder/getListBySettlement", {settlementOrderId: row.id}, function (data) {
-                vm.$set(row,'list',data);
-            })
+        add() {
+            this.$router.push('newReceiptOrder');
         }
     }
 }

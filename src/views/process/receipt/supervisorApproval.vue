@@ -1,5 +1,5 @@
 <template>
-    <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false" >
+    <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
         <LayoutPanel region="north" :border="false">
             <Panel :title="processObj.pdname" bodyCls="f-column" :border="false">
                 <div style="padding: 5px">
@@ -11,7 +11,8 @@
                         </tr>
                         <tr>
                             <td style="width:100%;text-align: left" colspan="3">
-                                <LinkButton style="margin-right: 20px" @click="send">撤销流程</LinkButton>
+                                <LinkButton style="margin-right: 20px" @click="review()">审核通过</LinkButton>
+                                <LinkButton style="margin-right: 20px" @click="bohui()">驳回申请</LinkButton>
                             </td>
                         </tr>
                     </table>
@@ -20,11 +21,11 @@
         </LayoutPanel>
         <LayoutPanel region="center" bodyCls="f-column" :border="true" style="padding: 3px;height: 100%">
             <Panel title="单据信息" bodyCls="f-column" :border="false">
-                <viewPaymentRequestFrom ref="viewPaymentRequestFromCom"></viewPaymentRequestFrom>
+                <viewRceceiptApplicationForm ref="viewRceceiptApplicationFormCom"></viewRceceiptApplicationForm>
             </Panel>
         </LayoutPanel>
         <Dialog ref="processDlg" closed
-                :title="'审核意见'"
+                :title="'驳回申请'"
                 :dialogStyle="{width:'300px',height:'200px'}"
                 bodyCls="f-column"
                 :draggable="true"
@@ -33,12 +34,12 @@
             <div class="f-full">
                 <div style="padding: 10px">
                     <div>
-                        <textarea placeholder="请输入驳回理由" style="height: 70px" class="form-control" v-model="message"></textarea>
+                        <textarea placeholder="请输入驳回意见" style="height: 70px" class="form-control" v-model="message"></textarea>
                     </div>
                 </div>
             </div>
             <div class="dialog-button">
-                <LinkButton style="width:80px" @click="disallowance">发送</LinkButton>
+                <LinkButton style="width:80px" @click="pass">发送</LinkButton>
                 <LinkButton style="width:80px" @click="$refs.processDlg.close()">关闭</LinkButton>
             </div>
         </Dialog>
@@ -58,7 +59,7 @@
 
 <script>
 
-import viewPaymentRequestFrom from '@/components/viewPaymentRequestFrom.vue';
+import viewRceceiptApplicationForm from '@/components/viewRceceiptApplicationForm.vue';
 import selectOrganizationUser from '@/components/selectOrganizationUser.vue';
 
 export default {
@@ -73,18 +74,38 @@ export default {
         this.processObj = JSON.parse(sessionStorage.processObj);
     },
     components: {
-        viewPaymentRequestFrom, selectOrganizationUser
+        viewRceceiptApplicationForm, selectOrganizationUser
     },
     methods: {
-        send(){
-            let vm=this;
+        bohui() {
+            this.$refs.processDlg.open();
+        },
+        review() {
+            this.$refs.selectUserDlg.open();
+        },
+        pass() {
+            let vm = this;
             this.$refs.processDlg.close();
-            this.confirm('撤回申请,确认吗?',function (){
+            this.confirm('驳回申请,确认吗?', function () {
                 vm.getData("sys/nextTask", {
                     taskid: vm.processObj.id,
-                    operationname: '撤销流程',
-                    message: '',
-                    processVariables:JSON.stringify({})
+                    operationname: '驳回',
+                    message: vm.message,
+                    processVariables: JSON.stringify({})
+                }, function (data) {
+                    vm.$router.push('index');
+                })
+            })
+        },
+        selectUser(obj) {
+            let vm = this;
+            this.$refs.selectUserDlg.close();
+            this.confirm('审核通过,确认吗?', function () {
+                vm.getData("sys/nextTask", {
+                    taskid: vm.processObj.id,
+                    operationname: '审核通过',
+                    message: vm.message,
+                    processVariables: JSON.stringify({financialDirector: obj.id})
                 }, function (data) {
                     vm.$router.push('index');
                 })

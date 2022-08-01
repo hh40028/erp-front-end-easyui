@@ -1,6 +1,6 @@
 <template>
     <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
-        <LayoutPanel region="north" :border="true" style="padding: 3px;">
+        <LayoutPanel region="north" :border="false">
             <Panel :title="processObj.pdname" bodyCls="f-column" :border="false">
                 <div style="padding: 5px">
                     <table style="width:100%;border:0">
@@ -12,45 +12,44 @@
                         <tr>
                             <td style="width:100%;text-align: left" colspan="3">
                                 <LinkButton style="margin-right: 20px" @click="openDlg">驳回申请</LinkButton>
-                                <LinkButton style="margin-right: 20px" @click="submit">提交付款信息</LinkButton>
+                                <LinkButton style="margin-right: 20px" @click="submit">提交收款信息</LinkButton>
                             </td>
                         </tr>
                     </table>
                 </div>
             </Panel>
         </LayoutPanel>
-        <LayoutPanel region="center" bodyCls="f-column" :border="true" style="padding: 3px;height: 100%">
-            <Panel title="付款信息" bodyCls="f-column" :border="false">
+        <LayoutPanel region="center" bodyCls="f-column" :border="true">
+            <Panel title="收款信息" bodyCls="f-column" :border="false">
                 <Layout bodyCls="f-column" :border="false">
                     <LayoutPanel region="north" :border="false">
                         <Panel :bodyStyle="{padding:'3px'}" bodyCls="f-column" :border="false">
                             <div class="row">
                                 <div class="col-3 p-10">
-                                    <TextBox v-model="obj.unitName" style="width:100%;height:30px" readonly>
+                                    <TextBox v-model="obj.customername" style="width:100%;height:30px" readonly>
                                         <Addon align="left">
                                             <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">往来单位:</LinkButton>
                                         </Addon>
                                     </TextBox>
                                 </div>
                                 <div class="col-3 p-10" @click="selAccount">
-                                    <TextBox v-model="obj.accountName" style="width:100%;height:30px" readonly>
+                                    <TextBox v-model="obj.accountname" style="width:100%;height:30px" readonly>
                                         <Addon align="left">
-                                            <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">付款账户:</LinkButton>
+                                            <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">收款账户:</LinkButton>
                                         </Addon>
                                     </TextBox>
                                 </div>
                                 <div class="col-3 p-10">
                                     <TextBox value="0" style="width:100%;height:30px" readonly>
                                         <Addon align="left">
-                                            <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">应付累计:</LinkButton>
+                                            <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">应收累计:</LinkButton>
                                         </Addon>
                                     </TextBox>
                                 </div>
                                 <div class="col-3 p-10">
-                                    <!--                                    <NumberBox inputId="n2" :value="234.56" :precision="2" :spinners="false"></NumberBox>-->
-                                    <NumberBox v-model="obj.actualPaymentAmount" :precision="2" :spinners="false" style="width:100%;height:30px" @valueChange="calc">
+                                    <NumberBox v-model="obj.amount" :precision="2" :spinners="false" style="width:100%;height:30px" @valueChange="calc">
                                         <Addon align="left">
-                                            <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">实付金额:</LinkButton>
+                                            <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'70px',height:'30px'}">实收金额:</LinkButton>
                                         </Addon>
                                     </NumberBox>
                                 </div>
@@ -66,43 +65,40 @@
                     </LayoutPanel>
                     <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
 
-                        <Panel bodyCls="f-column" :border="true" style="line-height: 35px">
+                        <Panel bodyCls="f-column" :border="false" style="line-height: 35px">
                             <table style="width:100%">
                                 <tr>
                                     <td style="width:50%">单据合计金额: <b>{{ toMoney(obj.totalAmount, '') }}元</b></td>
                                     <td style="width:50%;text-align: right;color:orangered">
-                                        <div v-if="over>0">余额: {{ toMoney(over, '') }}元,未分配采购单,记入应付账款(借)</div>
+                                        <div v-if="over>0">余额: {{ toMoney(over, '') }}元未分配订单,记入应收账款(贷)</div>
                                     </td>
                                 </tr>
                             </table>
                         </Panel>
                         <DataGrid :data="list" :border="false"
-                                  :clickToEdit="true"
                                   :rowCss="getRowCss"
                                   class="f-full"
                                   :columnResizing="true">
-                            <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
-                                <template slot="body" slot-scope="scope">
-                                    {{ scope.rowIndex + 1 }}
-                                </template>
-                            </GridColumn>
                             <GridColumn field='customOrderId' title='订单编号' width="120" align="center"></GridColumn>
-                            <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
-                            <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
-                            <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                            <GridColumn field="cost" title='单价' width="100" align="right">
-                                <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost, '') }}
-                                </template>
-                            </GridColumn>
+<!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
+                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
+                            <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
+                            <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
                             <GridColumn title='合计金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                                    {{ toMoney(scope.row.jdPrice, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='createTime' title='递交时间' width="200" align="center"></GridColumn>
-                            <GridColumn field='deliveryTime' title='发货时间' width="200" align="center"></GridColumn>
-                            <GridColumn field='settlement' title='结算金额' width="100" align="center" :editable="true"></GridColumn>
+                            <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
+                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
+                            <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
+                            <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
+                            <GridColumn title='结算金额' width="100" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.settlement, '') }}
+                                </template>
+                            </GridColumn>
                         </DataGrid>
                     </LayoutPanel>
                 </Layout>
@@ -169,19 +165,19 @@ export default {
         load() {
             let vm = this;
             this.processObj = JSON.parse(sessionStorage.processObj);
-            this.getData("paymentRequestForm/getViewObj", {id: this.processObj.relationid}, function (data) {
+            this.getData("receiptApplicationForm/getViewObj", {id: this.processObj.relationid}, function (data) {
                 vm.obj = data.obj;
                 vm.$set(vm.obj, 'totalAmount', 0);
                 vm.list = [];
                 data.list.forEach(function (e) {
-                    vm.obj.totalAmount += parseFloat(e.cost) * parseFloat(e.wareNum);
+                    vm.obj.totalAmount += parseFloat(e.jdPrice);
                     vm.list.push(e);
                 })
             })
         },
         selectAccount(obj) {
-            this.$set(this.obj, 'accountid', obj.id);
-            this.$set(this.obj, 'accountName', obj.name);
+            this.$set(this.obj, 'accountId', obj.id);
+            this.$set(this.obj, 'accountname', obj.name);
             this.$refs.selectAccountDlg.close();
         },
         selAccount() {
@@ -189,10 +185,10 @@ export default {
         },
         calc() {
             let vm = this;
-            let total = parseFloat(this.obj.actualPaymentAmount);
+            let total = parseFloat(this.obj.amount);
             this.list.forEach(function (e) {
                 vm.$set(e, 'settlement', 0);
-                let amount = parseFloat(e.wareNum) * parseFloat(e.cost);
+                let amount = parseFloat(e.jdPrice);
                 if (total >= amount) {
                     e.settlement = amount;
                     total -= amount;
@@ -201,18 +197,18 @@ export default {
             this.over = total;
         },
         getRowCss(row) {
-            if (parseFloat(row.wareNum) * parseFloat(row.cost) === parseFloat(row.settlement)) {
+            if (parseFloat(row.jdPrice) === parseFloat(row.settlement)) {
                 return {background: "#a8fea2"};
             }
             return null;
         },
         submit() {
             let vm = this;
-            this.confirm('提交付款单,确认吗?', function () {
-                vm.getData("paymentOrder/submitProcessPayment", {
+            this.confirm('提交收款单,确认吗?', function () {
+                vm.getData("receiptOrder/submitProcessReceipt", {
                     taskid: vm.processObj.id,
-                    operationname: '付款完成',
-                    message: '付款完成',
+                    operationname: '收款完成',
+                    message: '收款完成',
                     processVariables: JSON.stringify({}),
                     obj: JSON.stringify(vm.obj),
                     rows: JSON.stringify(vm.list)
@@ -227,7 +223,7 @@ export default {
             this.confirm('驳回申请,确认吗?', function () {
                 vm.getData("sys/nextTask", {
                     taskid: vm.processObj.id,
-                    operationname: '财务驳回',
+                    operationname: '驳回',
                     message: vm.message,
                     processVariables: JSON.stringify({}),
                 }, function (data) {

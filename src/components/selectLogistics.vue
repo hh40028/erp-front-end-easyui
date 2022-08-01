@@ -2,6 +2,8 @@
     <div>
         <Dialog bodyCls="f-column" ref="selectLogisticsDlg" closed
                 :title="'选择物流公司'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'400px',height:'500px'}"
                 :modal="true">
             <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">

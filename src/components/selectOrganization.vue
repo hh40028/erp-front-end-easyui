@@ -3,6 +3,8 @@
         <input v-if="input" type="text" v-model="name" readonly @click="openDlg" class="form-control">
         <Dialog ref="selectOrganizationDlg" closed
                 :title="'选择部门'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'300px',height:'50vh'}"
                 :modal="true">
             <Tree :data="tree" @selectionChange="selectItem($event)"></Tree>

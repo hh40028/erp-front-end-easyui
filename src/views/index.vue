@@ -1,6 +1,10 @@
 <template>
         <Layout bodyCls="f-column" :border="false">
-            <LayoutPanel region="center" bodyCls="f-column" :border="true" style="padding: 3px">
+            <LayoutPanel region="east" style="width:300px;" bodyCls="f-column" :border="true">
+                <Panel title="通知" :collapsible="false" class="f-full" :border="false">
+                </Panel>
+            </LayoutPanel>
+            <LayoutPanel region="center" bodyCls="f-column" :border="false">
                 <Panel title="待办任务" :collapsible="false" class="f-full" :border="false">
                     <DataGrid style="height:calc(100vh - 84px)" :title="'待办任务'"
                               :border="false"
@@ -18,7 +22,7 @@
                               @pageChange="onPageChange($event)"
                               :pagination="true"
                               :pagePosition="'bottom'">
-                        <GridColumn field="pdname" title="流程名称" width="120" align="center" :frozen="true"></GridColumn>
+                        <GridColumn field="pdname" title="流程名称" width="120" align="center"></GridColumn>
                         <GridColumn field="nodename" title="节点名称" width="120" align="center"></GridColumn>
                         <GridColumn field="sendusername" title="发送用户" width="120" align="center"></GridColumn>
                         <GridColumn field="arrivaltime" title="发送时间" width="150" align="center"></GridColumn>
@@ -85,3 +89,4 @@ export default {
 
 <style scoped>
 </style>
+

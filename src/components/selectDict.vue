@@ -3,6 +3,8 @@
         <input v-if="input" type="text" v-model="dictname" readonly @click="openDlg" class="form-control">
         <Dialog ref="selectDictDlg" closed
                 :title="'选择'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'150',height:'50vh'}"
                 :modal="true">
             <DataList style="width:250px;height:550px"

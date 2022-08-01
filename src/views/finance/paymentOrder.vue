@@ -58,6 +58,8 @@
                     :title="'编辑付款单'"
                     :dialogStyle="{width:'500px',height:'450px'}"
                     bodyCls="f-column"
+                    :draggable="true"
+                    :resizable="true"
                     :modal="true">
                 <div class="f-full">
                     <div class="col-6 p-10">

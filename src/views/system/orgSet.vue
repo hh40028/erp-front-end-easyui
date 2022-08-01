@@ -19,7 +19,7 @@
                 </SearchBox>
             </div>
         </LayoutPanel>
-        <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
+        <LayoutPanel region="center" style="height:100%;" bodyCls="f-column" :border="false">
             <TreeGrid class="f-full"
                       :border="false"
                       :striped="true"
@@ -32,6 +32,8 @@
             </TreeGrid>
             <Dialog ref="dlgEdit" closed
                     :title="'编辑部门'"
+                    :draggable="true"
+                    :resizable="true"
                     :dialogStyle="{width:'400px',height:'320px'}"
                     bodyCls="f-column"
                     :modal="true">

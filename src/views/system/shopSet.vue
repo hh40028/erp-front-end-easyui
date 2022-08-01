@@ -28,6 +28,8 @@
                     :title="'编辑店铺'"
                     :dialogStyle="{width:'400px',height:'240px'}"
                     bodyCls="f-column"
+                    :draggable="true"
+                    :resizable="true"
                     :modal="true">
                 <div class="f-full">
                     <div class="col-12 p-10">

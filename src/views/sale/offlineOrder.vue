@@ -30,19 +30,8 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn field='id' title='订单编号' width="120" align="center" :frozen="true"></GridColumn>
+                <GridColumn field='customOrderId' title='订单编号' width="120" align="center" :frozen="true"></GridColumn>
                 <GridColumn field='customerName' title='客户名称' width="120" align="center"></GridColumn>
-<!--                <GridColumn field='commodityNum' title='数量' width="50" align="center"></GridColumn>-->
-<!--                <GridColumn field='jdPrice' title='售价' width="90" align="right">-->
-<!--                    <template slot="body" slot-scope="scope">-->
-<!--                        {{toMoney(scope.row.jdPrice*scope.row.wareNum,'')}}-->
-<!--                    </template>-->
-<!--                </GridColumn>-->
-<!--                <GridColumn title='合计金额' width="90" align="right">-->
-<!--                    <template slot="body" slot-scope="scope">-->
-<!--                        {{toMoney(scope.row.jdPrice*scope.row.wareNum,'')}}-->
-<!--                    </template>-->
-<!--                </GridColumn>-->
                 <GridColumn field='consigneeName' title='收货人姓名' width="120" align="center"></GridColumn>
                 <GridColumn field='expectedDeliveryTime' title='期望送货时间' width="140" align="center"></GridColumn>
                 <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
@@ -64,6 +53,13 @@
                                           :columnResizing="true"
                                           :rowCss="getItemRowCss"
                                           class="f-full">
+                                    <GridColumn title="编辑" align="center" width="80">
+                                        <template slot="body" slot-scope="scope">
+                                            <div>
+                                                <a v-if="scope.row.sendSupplier" @click="editItem(scope.row)" style="color:red;margin-left: 10px">编辑</a>
+                                            </div>
+                                        </template>
+                                    </GridColumn>
                                     <GridColumn title="操作" align="center" width="80">
                                         <template slot="body" slot-scope="scope">
                                             <div v-if="!scope.row.logisticsCompanyName || !scope.row.logisticsNumber || !scope.row.deliveryTime">
@@ -75,6 +71,7 @@
                                             </div>
                                         </template>
                                     </GridColumn>
+                                    <GridColumn field='number' title='单据编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='upc' title='商品UPC编号' width="120" align="center"></GridColumn>
                                     <GridColumn field='commodityName' title='商品名称' width="120" align="center"></GridColumn>
@@ -118,33 +115,14 @@
                         </TabPanel>
                     </Tabs>
                 </LayoutPanel>
-                <!--                <LayoutPanel region="east" style="width:220px;" bodyCls="f-column" :border="true">-->
-                <!--                    <div class="col-12 p-t-10 p-l-10 p-r-10">-->
-                <!--                        <b>买家留言:</b>-->
-                <!--                        <div>{{ obj.buyerMessage }}</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="col-12 p-t-10 p-l-10 p-r-10">-->
-                <!--                        <b>客服备注:</b>-->
-                <!--                        <div>{{ obj.customerServiceRemarks }}</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="col-12 p-t-10 p-l-10 p-r-10">-->
-                <!--                        <b>打印备注:</b>-->
-                <!--                        <div>{{ obj.printRemarks }}</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="col-12 p-t-10 p-l-10 p-r-10">-->
-                <!--                        <b>发票内容:</b>-->
-                <!--                        <div>{{ obj.invoiceContent }}</div>-->
-                <!--                    </div>-->
-                <!--                </LayoutPanel>-->
-
             </Layout>
-
-
         </LayoutPanel>
         <Dialog ref="editOrderFormDlg" closed
                 :title="'编辑线下订单'"
                 :dialogStyle="{width:'80%',height:'80%'}"
                 bodyCls="f-column"
+                :draggable="true"
+                :resizable="true"
                 :modal="true">
             <div class="f-full">
                 <Layout style="width:100%;height:100%" bodyCls="f-column" :border="false">
@@ -205,6 +183,8 @@
 
         <Dialog bodyCls="f-column" ref="selectCommoditySupplierDlg" closed
                 :title="'选择一个供应商'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'50vW',height:'50vH'}"
                 :modal="true">
             <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="true">
@@ -227,7 +207,70 @@
                 </DataGrid>
             </Layout>
         </Dialog>
-        <selectCustomer ref="selectCustomerCom" @selectCustomer="selectCustomer"></selectCustomer>
+        <Dialog bodyCls="f-column" ref="editDlg" closed
+                :title="'编辑信息'"
+                :dialogStyle="{width:'50vW',height:'40vH'}"
+                :draggable="true"
+                :resizable="true"
+                :modal="true">
+            <div class="f-full">
+                <table class="table" style="width: 100%">
+                    <tbody>
+                    <tr>
+                        <th class="text-right th">商品名称</th>
+                        <td class="text-left td" colspan="3">{{ editObj.commodityName }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">商品编号</th>
+                        <td class="text-left td">{{ editObj.sku }}</td>
+                        <th class="text-right th">商品数量</th>
+                        <td class="text-left td">{{ editObj.wareNum }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">供应商名称</th>
+                        <td class="text-left td">{{ editObj.supplierName }}</td>
+                        <th class="text-right th">京东价</th>
+                        <td class="text-left td">{{ editObj.jdPrice }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">采购价</th>
+                        <td class="text-left td">
+                            <input type="text" class="form-control" v-model="editObj.cost">
+                        </td>
+                        <th class="text-right th">发货时间</th>
+                        <td class="text-left td">
+                            <input type="datetime-local" class="form-control" v-model="editObj.deliveryTime">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">物流公司</th>
+                        <td class="text-left td">
+                            <input type="text" class="form-control" v-model="editObj.logisticsCompanyName">
+                        </td>
+                        <th class="text-right th">物流单号</th>
+                        <td class="text-left td">
+                            <input type="text" class="form-control" v-model="editObj.logisticsNumber">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="dialog-button">
+                <LinkButton style="width:80px" @click="modifyDirectly">保存</LinkButton>
+                <LinkButton style="width:80px" @click="$refs.editDlg.close()">关闭</LinkButton>
+            </div>
+        </Dialog>
+
+        <Dialog bodyCls="f-column" ref="selectCustomerDlg" closed
+                :title="'选择供应商'"
+                :dialogStyle="{width:'60vW',height:'50vH'}"
+                :draggable="true"
+                :resizable="true"
+                :modal="true">
+            <div class="f-full">
+                <selectCustomer ref="selectCustomerCom" @selectCustomer="selectCustomer"></selectCustomer>
+            </div>
+        </Dialog>
         <selectCommodity ref="selectCommodityCom" @selectCommodity="selectCommodity"></selectCommodity>
     </Layout>
 </template>
@@ -261,7 +304,8 @@ export default {
             changeItems: [],
             commoditySupplierList: [],
             addCommodityObj: {},
-            items2: []
+            items2: [],
+            editObj:{}
         }
     },
     components: {
@@ -331,11 +375,12 @@ export default {
             return null;
         },
         openSelectCustomer() {
-            this.$refs.selectCustomerCom.openDlg();
+            this.$refs.selectCustomerDlg.open();
         },
         selectCustomer(obj) {
             this.$set(this.obj, 'customerId', obj.id);
             this.$set(this.obj, 'customerName', obj.name);
+            this.$refs.selectCustomerDlg.close();
         },
         add() {
             this.obj = {};
@@ -455,6 +500,20 @@ export default {
                     vm.loadPage(vm.pageNumber, vm.pageSize);
                     vm.items = [];
                     vm.changeItems = [];
+                })
+            })
+        },
+        editItem(obj) {
+            this.editObj = this.clone(obj);
+            this.$refs.editDlg.open();
+        },
+        modifyDirectly() {
+            let vm = this;
+            this.$refs.editDlg.close();
+            this.confirm('直接更改发货信息,确认吗?', function () {
+                vm.getData("orderFormItem/modifyDirectly", {obj:JSON.stringify(vm.editObj)}, function (data) {
+                    vm.editObj = {};
+                    vm.loadItems();
                 })
             })
         }

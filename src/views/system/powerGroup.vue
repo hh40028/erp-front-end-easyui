@@ -35,10 +35,11 @@
                 <GridColumn field="groupname" title="组名称" width="120" align="center"></GridColumn>
                 <GridColumn field="path" title="权限路径" align="left"></GridColumn>
                 <GridColumn field="remark" title="权限说明" align="left"></GridColumn>
-
             </DataGrid>
             <Dialog ref="editDlg" closed
                     :title="'选择权限分组'"
+                    :draggable="true"
+                    :resizable="true"
                     :dialogStyle="{width:'400px',height:'400px'}"
                     bodyCls="f-column"
                     :modal="true">
@@ -65,6 +66,8 @@
                     :title="'编辑权限信息'"
                     :dialogStyle="{width:'400px',height:'400px'}"
                     bodyCls="f-column"
+                    :draggable="true"
+                    :resizable="true"
                     :modal="true">
                 <div class="f-full">
                     <Tree :data="powerGroups" @selectionChange="clickGroup($event)"></Tree>
@@ -77,6 +80,8 @@
                     :title="'编辑权限组'"
                     :dialogStyle="{width:'200px',height:'160px'}"
                     bodyCls="f-column"
+                    :draggable="true"
+                    :resizable="true"
                     :modal="true">
                 <div class="f-full">
                     <div class="col-12 p-10">

@@ -1,5 +1,5 @@
 <template>
-    <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
+    <Layout bodyCls="f-column" :border="false">
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
                 <div class="pull-right">
@@ -54,6 +54,8 @@
                 <GridColumn field='sale_state_name' title='上柜' width="40" align="center"></GridColumn>
             </DataGrid>
             <Dialog ref="d1" closed
+                    :draggable="true"
+                    :resizable="true"
                     :title="'编辑商品信息'"
                     :dialogStyle="{width:'80%',height:'80vh'}"
                     :modal="true">
@@ -536,82 +538,6 @@
                             </tr>
                             </tbody>
                         </table>
-                        <!--                        <DataGrid :data="viewObj" :border="false"-->
-                        <!--                                  :columnResizing="true"-->
-                        <!--                                  class="f-full">-->
-                        <!--                            <GridColumn field='sale_state_name' title='上柜状态' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='name' title='商品名称' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='cid1' title='第一分类' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='leaf_cid' title='末级分类' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='zh_brand' title='中文品牌' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='en_brand' title='英文品牌' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='model' title='商品型号' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='tel' title='服务电话' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='web_site' title='官方网址' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='original_place' title='产地' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='warranty' title='质保' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='shelf_life' title='保质期' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='weight' title='商品重量(单位：千克，含包装)' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='length' title='长度(单位：毫米，含包装)' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='width' title='宽度(单位：毫米，含包装)' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='height' title='高度(单位：毫米，含包装)' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='market_price' title='市场价' width="120" align="right"></GridColumn>-->
-                        <!--                            <GridColumn field='purchase_price' title='采购价' width="120" align="right"></GridColumn>-->
-                        <!--                            <GridColumn field='member_price' title='京东价' width="120" align="right"></GridColumn>-->
-                        <!--                            <GridColumn field='saler_code' title='销售员简码' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='purchaser_code' title='采购员简码' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='upc' title='UPC编码' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='packing' title='包装规格' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='pack_type' title='特殊属性' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='sku_unit' title='销售单位（必须为VC接口提供的销售单位）' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='pkg_info' title='包装清单' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='item_num' title='货号' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='intro_html' title='PC端代码录入的商品介绍' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='intro_mobile' title='Mobile端代码录入的商品介绍' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='video_id' title='视频介绍编号' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='danger_value' title='危险品的值' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='sysp' title='试用品标识' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='store_property' title='冷链标记' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='product_oil_number' title='成品油容量' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='product_oil_unit' title='成品油单位' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='gifts_goods' title='赠品标识' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='design_concept' title='设计理念' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='has_transfer_elec_code' title='是否需要电子监管码' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='after_sale_desc' title='售后保障' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='wreadme' title='规格参数手工录入文本' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='prop_id' title='规格参数ID' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='prop_vid' title='单选属性值ID' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='prop_remark' title='数值/文本内容/单选备注' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='prop_alias' title='单选别名' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='prop_values' title='复选的属性值ID,以英文分号分隔' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='ext_id' title='扩展属性ID' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='ext_values' title='扩展属性单选' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='ext_alias' title='单选属性别名' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='ext_remark' title='数值' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='sku_name_gaea' title='商品名称' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='dim1_val_gaea' title='第一维度销售属性值' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='dim1_sort_gaea' title='第一维度销售属顺序' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='dim2_val_gaea' title='第二维度销售属性值' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='dim2_sort_gaea' title='第二维度销售属性顺序' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='other_sale_attribute_gaea' title='高维销售属性格式' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='market_price_gaea' title='市场价' width="120" align="right"></GridColumn>-->
-                        <!--                            <GridColumn field='purchase_price_gaea' title='采购价' width="120" align="right"></GridColumn>-->
-                        <!--                            <GridColumn field='member_price_gaea' title='京东价' width="120" align="right"></GridColumn>-->
-                        <!--                            <GridColumn field='weight_gaea' title='单位:千克,含包装' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='length_gaea' title='长度 单位:毫米,含包装' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='width_gaea' title='宽度 单位:毫米,含包装' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='height_gaea' title='高度 单位:毫米,含包装' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='upc_gaea' title='upc编码' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='item_num_gaea' title='货号' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='type' title='资质类型' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='applicant' title='3c证书委托人' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='qc_code' title='3c证书编号' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='end_date' title='资质到期日期' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='file_key_list' title='资质文件key列表' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='ent_code' title='统一社会信用代码' width="120" align="center"></GridColumn>-->
-                        <!--                            <GridColumn field='modify_time' title='修改时间' width="120" align="center"></GridColumn>-->
-                        <!--                        </DataGrid>-->
                     </Panel>
                 </TabPanel>
                 <TabPanel :title="'供应商关联'">
@@ -673,6 +599,8 @@
 
         <Dialog ref="linkedDlg" closed
                 :title="'关联供应商'"
+                :draggable="true"
+                :resizable="true"
                 :dialogStyle="{width:'60vW',height:'360px'}"
                 :modal="true">
             <div class="col-4 p-t-15 p-l-15 p-r-15">
@@ -710,8 +638,15 @@
                 </div>
             </template>
         </Dialog>
-        <selectSupplier ref="selectSupplierCom" username="" @selectSupplier="selectSupplier"></selectSupplier>
-        <!--        <selectLogistics ref="selectLogisticsCom" username="" @selectLogistics="selectLogistics"></selectLogistics>-->
+
+        <Dialog ref="selectSupplierDlg" closed
+                :title="'关联供应商'"
+                :draggable="true"
+                :resizable="true"
+                :dialogStyle="{width:'60vW',height:'360px'}"
+                :modal="true">
+            <selectSupplier ref="selectSupplierCom" username="" @selectSupplier="selectSupplier"></selectSupplier>
+        </Dialog>
     </Layout>
 </template>
 
@@ -843,6 +778,7 @@ export default {
         selectSupplier(obj) {
             this.$set(this.csObj, 'supplierid', obj.id);
             this.$set(this.csObj, 'suppliername', obj.name);
+            this.$refs.selectSupplierDlg.close();
         },
         filter(filterString) {
             this.filterString = filterString;
@@ -863,7 +799,7 @@ export default {
             this.$refs.linkedDlg.open();
         },
         openSupplier() {
-            this.$refs.selectSupplierCom.open();
+            this.$refs.selectSupplierDlg.open();
         },
         editCSObj() {
             this.$refs.linkedDlg.open();

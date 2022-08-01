@@ -195,14 +195,6 @@ new Vue({
         }
     },
     methods: {
-        loadTaskCount() {
-            // let vm = this;
-            // if (this.userObj) {
-            //     this.getData("sys/getTaskCount", {}, function (data) {
-            //         vm.taskcount = data;
-            //     })
-            // }
-        }
     },
     router,
     render: h => h(App)

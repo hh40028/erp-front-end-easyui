@@ -1,6 +1,6 @@
 <template>
     <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
-        <LayoutPanel region="north" :border="true" style="padding: 3px">
+        <LayoutPanel region="north" :border="false">
             <Panel :title="processObj.pdname" bodyCls="f-column" :border="false">
                 <div style="padding: 5px">
                     <table style="width:100%;border:0">
@@ -28,6 +28,8 @@
                 :title="'审核意见'"
                 :dialogStyle="{width:'300px',height:'200px'}"
                 bodyCls="f-column"
+                :draggable="true"
+                :resizable="true"
                 :modal="true">
             <div class="f-full">
                 <div style="padding: 10px">
@@ -45,6 +47,8 @@
                 :title="'选择财务主管'"
                 :dialogStyle="{width:'600px',height:'600px'}"
                 bodyCls="f-column"
+                :draggable="true"
+                :resizable="true"
                 :modal="true">
             <div class="f-full">
                 <selectOrganizationUser ref="selectOrganizationUserCom" @selectUser="selectUser"></selectOrganizationUser>

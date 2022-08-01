@@ -35,6 +35,9 @@
             <Dialog ref="editSubjectsDlg" closed
                     :title="'编辑科目'"
                     :dialogStyle="{width:'400px',height:'320px'}"
+
+                    :draggable="true"
+                    :resizable="true"
                     bodyCls="f-column"
                     :modal="true">
                 <div class="f-full">
@@ -60,6 +63,8 @@
             </Dialog>
             <Dialog ref="editSubjectsChildDlg" closed
                     :title="'编辑科目'"
+                    :draggable="true"
+                    :resizable="true"
                     :dialogStyle="{width:'400px',height:'320px'}"
                     bodyCls="f-column"
                     :modal="true">

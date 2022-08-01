@@ -43,6 +43,8 @@
                     :title="'编辑仓库'"
                     :dialogStyle="{width:'400px',height:'320px'}"
                     bodyCls="f-column"
+                    :draggable="true"
+                    :resizable="true"
                     :modal="true">
                 <div class="f-full">
                     <div class="col-12 p-10">
@@ -68,6 +70,8 @@
                     :title="'编辑货位'"
                     :dialogStyle="{width:'300px'}"
                     bodyCls="f-column"
+                    :draggable="true"
+                    :resizable="true"
                     :modal="true">
                 <div class="f-full">
                     <div class="col-12 p-15">

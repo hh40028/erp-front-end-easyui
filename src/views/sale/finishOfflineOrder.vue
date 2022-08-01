@@ -10,7 +10,6 @@
         <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
             <DataGrid :data="data" style="width:100%;height:250px" :border="false"
                       class="f-full"
-                      :rowCss="getRowCss"
                       :columnResizing="true"
                       :lazy="true"
                       :total="total"
@@ -27,7 +26,7 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn field='id' title='订单编号' width="120" align="center" :frozen="true"></GridColumn>
+                <GridColumn field='customOrderId' title='订单编号' width="120" align="center" :frozen="true"></GridColumn>
                 <GridColumn field='customerName' title='客户名称' width="120" align="center"></GridColumn>
                 <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
                 <GridColumn title='合计金额' width="100" align="right">

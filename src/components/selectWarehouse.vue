@@ -1,28 +1,16 @@
 <template>
-    <div>
-        <input v-if="input" type="text" readonly v-model="name" class="form-control" @click="open">
-        <Dialog ref="selectWarehouseDlg" closed
-                :title="'选择仓库'"
-                :dialogStyle="{width:'30%',height:'400px'}"
-                :modal="true">
-            <DataGrid class="f-full"
-                      selectionMode="single"
-                      :data="warehouses"
-                      @selectionChange="selectRow($event)"
-                      style="width:100%;height:100%">
-                <GridColumn field="name" title="仓库名称"></GridColumn>
-                <GridColumn field="managername" title="负责人"></GridColumn>
-            </DataGrid>
-        </Dialog>
-    </div>
+    <DataGrid class="f-full"
+              selectionMode="single"
+              :data="warehouses"
+              @selectionChange="selectRow($event)"
+              style="width:100%;height:100%">
+        <GridColumn field="name" title="仓库名称"></GridColumn>
+        <GridColumn field="managername" title="负责人"></GridColumn>
+    </DataGrid>
 </template>
 
 <script>
 export default {
-    props: {
-        input: Boolean,
-        name: String
-    },
     name: "app",
     data() {
         return {
@@ -45,14 +33,7 @@ export default {
                 })
             })
         },
-        open() {
-            this.$refs.selectWarehouseDlg.open();
-            if (!this.warehouses.length) {
-                this.load();
-            }
-        },
         selectRow(obj) {
-            this.$refs.selectWarehouseDlg.close();
             this.$emit('selectWarehouse', obj);
         }
     }
