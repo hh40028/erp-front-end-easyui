@@ -6,7 +6,7 @@
                 <LinkButton iconCls="icon-edit" :disabled="!obj.id" :plain="true" @click="edit">编辑</LinkButton>
                 <LinkButton iconCls="icon-cut" :disabled="!obj.id" :plain="true" @click="copy">复制</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -76,6 +76,7 @@
 
 <script>
 import filterList from '@/components/filterList.vue';
+
 export default {
     name: "app",
     data() {
@@ -103,6 +104,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             let url = 'api/getDictQueryList';
@@ -125,24 +128,24 @@ export default {
         selectObj(obj) {
             this.obj = this.clone(obj);
         },
-        add(){
-            this.obj={};
+        add() {
+            this.obj = {};
             this.$refs.editDictDlg.open();
         },
-        edit(){
+        edit() {
             this.$refs.editDictDlg.open();
         },
-        copy(){
-            let obj={
-                name:'',
-                key:this.obj.key,
-                type:this.obj.type,
-                pid:this.obj.pid
+        copy() {
+            let obj = {
+                name: '',
+                keyname: this.obj.keyname,
+                type: this.obj.type,
+                pid: this.obj.pid
             }
-            this.obj=obj;
+            this.obj = obj;
             this.$refs.editDictDlg.open();
         },
-        save(){
+        save() {
             let vm = this;
             this.getData("api/saveDict", this.obj, function (data) {
                 vm.$refs.editDictDlg.close();
@@ -152,6 +155,10 @@ export default {
         filter(filterString) {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
+        },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
         },
     }
 }

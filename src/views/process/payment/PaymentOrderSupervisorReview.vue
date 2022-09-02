@@ -80,37 +80,37 @@ export default {
     methods: {
         send(v) {
             this.taskName = v;
-            if(v==='主管驳回'){
+            if (v === '主管驳回') {
                 this.$refs.processDlg.open();
             }
-            if(v==='审核通过'){
+            if (v === '审核通过') {
                 this.$refs.selectUserDlg.open();
             }
         },
-        selectUser(obj){
-            let vm=this;
+        selectUser(obj) {
+            let vm = this;
             this.$refs.selectUserDlg.close();
-            let processVariables={FinancialOfficer:obj.id};
-            this.confirm('发送'+obj.username+'付款,确认吗?',function (){
+            let processVariables = {FinancialOfficer: obj.id};
+            this.confirm('发送' + obj.username + '付款,确认吗?', function () {
                 vm.getData("sys/nextTask", {
                     taskid: vm.processObj.id,
                     operationname: vm.taskName,
                     message: '请尽快付款',
-                    processVariables:JSON.stringify(processVariables)
+                    processVariables: JSON.stringify(processVariables)
                 }, function (data) {
                     vm.$router.push('index');
                 })
             })
         },
-        disallowance(){
-            let vm=this;
+        disallowance() {
+            let vm = this;
             this.$refs.processDlg.close();
-            this.confirm('驳回申请,确认吗?',function (){
+            this.confirm('驳回申请,确认吗?', function () {
                 vm.getData("sys/nextTask", {
                     taskid: vm.processObj.id,
                     operationname: vm.taskName,
                     message: vm.message,
-                    processVariables:JSON.stringify({})
+                    processVariables: JSON.stringify({})
                 }, function (data) {
                     vm.$router.push('index');
                 })

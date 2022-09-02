@@ -48,41 +48,44 @@
                 </GridColumn>
                 <GridColumn field='customOrderId' title='订单编号' width="120" align="center"></GridColumn>
                 <GridColumn field='customerName' title='客户名称' width="120" align="center"></GridColumn>
-                <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
-                <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
-                <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
+                <GridColumn field='username' title='负责人' width="80" align="center"></GridColumn>
                 <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
-                <GridColumn title='合计金额' width="100" align="right">
+                <GridColumn title='合计金额' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.jdPrice, '') }}
+                        {{ toMoney(scope.row.total, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn field='consigneeName' title='收货人姓名' width="120" align="center"></GridColumn>
-                <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
+                <GridColumn field='consigneeName' title='收货人' width="120" align="left"></GridColumn>
                 <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
-                <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
-                 <template slot="detail" slot-scope="scope" :border="false">
+                <GridColumn field='address' title='收货地址' align="left"></GridColumn>
+                <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
+                <template slot="detail" slot-scope="scope" :border="false">
                     <div style="padding: 3px;background-color: #fcf3c4">
                         <DataGrid :data="scope.row.items" :border="false"
                                   :columnResizing="true"
                                   class="f-full">
                             <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
-                            <GridColumn field='commodityName' title='商品名称' width="220" align="left"></GridColumn>
+                            <GridColumn field='commodityName' title='商品名称' align="left"></GridColumn>
                             <GridColumn field='wareNum' title='商品数量' width="120" align="center"></GridColumn>
                             <GridColumn title='京东价' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
                                     {{ toMoney(scope.row.jdPrice, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn title='合计金额' width="100" align="right">
+                           <GridColumn title='售价' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.jdPrice*scope.row.wareNum, '') }}
+                                    {{ toMoney(scope.row.cost, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='supplierName' title='供应商' width="220" align="left"></GridColumn>
-                            <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
-                            <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
-                            <GridColumn field='deliveryTime' title='发货时间' width="150" align="center"></GridColumn>
+                            <GridColumn title='合计金额' width="100" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                                </template>
+                            </GridColumn>
+<!--                            <GridColumn field='supplierName' title='供应商' width="220" align="left"></GridColumn>-->
+<!--                            <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>-->
+<!--                            <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>-->
+<!--                            <GridColumn field='deliveryTime' title='发货时间' width="150" align="center"></GridColumn>-->
                         </DataGrid>
                     </div>
                 </template>
@@ -169,7 +172,7 @@ export default {
         loadItems(obj) {
             let vm = this;
             this.getData("orderFormItem/getList", {orderFormId: obj.id}, function (data) {
-                vm.$set(obj,'items',data.items);
+                vm.$set(obj, 'items', data.items);
                 console.log(data.itmes);
             })
         },
@@ -179,8 +182,8 @@ export default {
             this.data.forEach(function (e) {
                 vm.$set(e, 'settlement', 0);
                 if (e.selected) {
-                    vm.obj.applicationAmount += e.jdPrice;
-                    e.settlement = e.jdPrice;
+                    vm.obj.applicationAmount += e.total;
+                    e.settlement = e.total;
                 }
             })
         },

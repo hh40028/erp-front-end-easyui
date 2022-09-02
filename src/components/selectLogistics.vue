@@ -61,7 +61,7 @@ export default {
                 this.load();
             }
         },
-        close(){
+        close() {
             this.$refs.selectLogisticsDlg.close();
         },
         selectRow(obj) {

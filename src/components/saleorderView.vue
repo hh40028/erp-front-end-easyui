@@ -76,7 +76,7 @@
                         <GridColumn field="username" title="金额" width="100" align="center">
                             <template slot="body" slot-scope="scope">
                                 <div class="item">
-                                    {{ toMoney(scope.row.salecount * scope.row.saleprice , '￥') }}
+                                    {{ toMoney(scope.row.salecount * scope.row.saleprice, '￥') }}
                                 </div>
                             </template>
                         </GridColumn>

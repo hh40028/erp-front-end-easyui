@@ -4,7 +4,7 @@
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
                 <LinkButton iconCls="icon-add" :plain="true" @click="newPayment">开单</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -42,38 +42,49 @@
                 <GridColumn field='remark' title='摘要' align="left"></GridColumn>
                 <template slot="detail" slot-scope="scope" :border="false">
                     <div style="padding: 3px;background-color: #fff3b1">
-                        <DataGrid  v-if="scope.row.list.length>0"
-                                   :data="scope.row.list"
-                                   :border="false"
+                        <DataGrid v-if="scope.row.list.length>0"
+                                  :data="scope.row.list"
+                                  :border="false"
                                   class="f-full"
-                                   :rowCss="getItemRowCss"
+                                  :rowCss="getItemRowCss"
                                   :columnResizing="true">
                             <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
                                 <template slot="body" slot-scope="scope">
                                     {{ scope.rowIndex + 1 }}
                                 </template>
                             </GridColumn>
+                            <GridColumn field='orderNumber' title='单据编号' width="140" align="center"></GridColumn>
                             <GridColumn field='customOrderId' title='订单编号' width="160" align="center"></GridColumn>
-                            <GridColumn field='commodityName' title='商品名称' align="left"></GridColumn>
-                            <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                            <GridColumn field="cost" title='单价' width="100" align="right">
+                            <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
+                            <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
+                            <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
+                            <GridColumn field="purchasePrice" title='单价' width="80" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost, '') }}
+                                    {{ toMoney(scope.row.purchasePrice, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn title='合计金额' width="100" align="right">
+                            <GridColumn title='合计金额' width="80" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                                    {{ toMoney(scope.row.purchasePrice * scope.row.wareNum, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn title='结算金额' align="right" width="120">
+                            <GridColumn title='结算金额' align="right" width="80">
                                 <template slot="body" slot-scope="scope">
                                     {{ toMoney(scope.row.settlement, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='createTime' title='递交时间' width="200" align="center"></GridColumn>
-                            <GridColumn field='deliveryTime' title='发货时间' width="200" align="center"></GridColumn>
-                       </DataGrid>
+                            <GridColumn field='submitTime' title='递交时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='sendType' title='送货方式' width="150" align="center">
+                                <template slot="body" slot-scope="scope">
+                                    {{ scope.row.sendType ? "快递" : "送货" }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
+                            <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
+                            <GridColumn field='deliveryPhone' title='送货电话' width="120" align="center"></GridColumn>
+                            <GridColumn field='shippingTime' title='发货时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
+                        </DataGrid>
                         <div style="text-align: center;font-size: 20px;color:orange;line-height: 30px" v-if="scope.row.list.length===0">无结算单据</div>
                     </div>
                 </template>
@@ -110,6 +121,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("paymentOrder/getQueryList", {
@@ -137,22 +150,26 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
+        changePageSize(value) {
+            this.pageSize = value;
+            this.loadPage(1, this.pageSize);
+        },
         newPayment() {
             this.$router.push('newPayment');
         },
-        view(){
+        view() {
             this.$refs.viewDlg.open();
         },
         getItemRowCss(row) {
-            if (parseFloat(row.settlement)===parseFloat(row.cost)*parseFloat(row.wareNum)) {
+            if (parseFloat(row.settlement) === parseFloat(row.cost) * parseFloat(row.wareNum)) {
                 return {background: "#e1ffe0"};
             }
             return null;
         },
-        loadItem(row){
-            let vm=this;
-            this.getData("supplierPurchaseOrder/getListBySettlement", {settlementOrderId: row.id}, function (data) {
-                vm.$set(row,'list',data);
+        loadItem(row) {
+            let vm = this;
+            this.getData("paymentOrder/getListBySettlement", {settlementOrderId: row.id}, function (data) {
+                vm.$set(row, 'list', data);
             })
         }
     }

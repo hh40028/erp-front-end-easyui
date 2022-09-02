@@ -32,13 +32,13 @@
                 <GridColumn field="occurrencedate" title="发生日期" align="center"></GridColumn>
                 <GridColumn field="debit" title="借方发生" align="right">
                     <template slot="body" slot-scope="scope">
-                        <div class="item">{{ toMoney(scope.row.debit,'￥') }}
+                        <div class="item">{{ toMoney(scope.row.debit, '￥') }}
                         </div>
                     </template>
                 </GridColumn>
                 <GridColumn field="credit" title="贷方发生" align="right">
                     <template slot="body" slot-scope="scope">
-                        <div class="item">{{ toMoney(scope.row.credit,'￥') }}
+                        <div class="item">{{ toMoney(scope.row.credit, '￥') }}
                         </div>
                     </template>
                 </GridColumn>
@@ -60,7 +60,7 @@ export default {
     props: {
         unitid: Number,
         name: String,
-        accountid:Number
+        accountid: Number
     },
     name: "app",
     data() {
@@ -85,12 +85,14 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             let url = 'statement/getQueryListByUnit';
             this.$root.getData(url, {
                 unitid: this.unitid,
-                accountid:this.accountid,
+                accountid: this.accountid,
                 limit: pageSize,
                 offset: pageSize * (pageNumber - 1),
                 sort: "id",

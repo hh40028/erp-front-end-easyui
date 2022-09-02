@@ -25,20 +25,20 @@
 
 <script>
 export default {
-    props:{
-        relationid:{
-            type:Number,
-            default:0
+    props: {
+        relationid: {
+            type: Number,
+            default: 0
         },
-        instanceid:{
-            type:Number,
-            default:0
+        instanceid: {
+            type: Number,
+            default: 0
         }
     },
     name: "app",
     data() {
         return {
-            tasks:[]
+            tasks: []
         }
     },
     created: function () {
@@ -48,7 +48,7 @@ export default {
         loadList: function () {
             let vm = this;
             this.getData("sys/getListByRelationid", {
-                instanceid:this.instanceid,
+                instanceid: this.instanceid,
                 relationid: this.relationid
             }, function (data) {
                 vm.tasks = data;

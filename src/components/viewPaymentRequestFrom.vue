@@ -1,8 +1,7 @@
 <template>
     <Layout bodyCls="f-column" :border="false">
-        <LayoutPanel region="north" :border="false">
+        <LayoutPanel region="north" bodyCls="f-column" :border="false">
             <Panel :bodyStyle="{padding:'0'}" bodyCls="f-column" :border="false">
-                <div class="row">
                     <table style="width: 100%">
                         <tbody>
                         <tr>
@@ -15,11 +14,10 @@
                         </tr>
                         </tbody>
                     </table>
-                </div>
             </Panel>
         </LayoutPanel>
-        <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
-            <DataGrid :data="list" style="width:100%;height:250px" :border="false"
+        <LayoutPanel region="center" bodyCls="f-column" :border="false">
+            <DataGrid :data="list" :border="false"
                       class="f-full"
                       :columnResizing="true">
                 <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
@@ -27,22 +25,32 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn field='customOrderId' title='订单编号' width="120" align="center"></GridColumn>
-                <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
-                <GridColumn field='commodityName' title='商品名称' align="left"></GridColumn>
-                <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                <GridColumn field="cost" title='单价' width="100" align="right">
+                <GridColumn field='orderNumber' title='单据编号' width="140" align="center"></GridColumn>
+                <GridColumn field='customOrderId' title='订单编号' width="160" align="center"></GridColumn>
+                <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
+                <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
+                <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
+                <GridColumn field="purchasePrice" title='单价' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.cost, '') }}
+                        {{ toMoney(scope.row.purchasePrice, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn title='合计金额' width="100" align="right">
+                <GridColumn title='合计金额' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                        {{ toMoney(scope.row.purchasePrice * scope.row.wareNum, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn field='createTime' title='递交时间' width="200" align="center"></GridColumn>
-                <GridColumn field='deliveryTime' title='发货时间' width="200" align="center"></GridColumn>
+                <GridColumn field='submitTime' title='递交时间' width="150" align="center"></GridColumn>
+                <GridColumn field='sendType' title='送货方式' width="150" align="center">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.row.sendType ? "快递" : "送货" }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
+                <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
+                <GridColumn field='deliveryPhone' title='送货电话' width="120" align="center"></GridColumn>
+                <GridColumn field='shippingTime' title='发货时间' width="150" align="center"></GridColumn>
+                <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
             </DataGrid>
         </LayoutPanel>
     </Layout>
@@ -53,9 +61,9 @@ export default {
     name: "app",
     data() {
         return {
-            processObj:{},
-            obj:{},
-            list:[]
+            processObj: {},
+            obj: {},
+            list: []
         }
     },
     created: function () {
@@ -64,13 +72,13 @@ export default {
     methods: {
         load() {
             let vm = this;
-            this.processObj=JSON.parse(sessionStorage.processObj);
-            this.getData("paymentRequestForm/getViewObj", {id:this.processObj.relationid}, function (data) {
-                vm.obj=data.obj;
-                vm.$set(vm.obj,'paymentAmount',0);
-                vm.list=[];
-                data.list.forEach(function (e){
-                    vm.obj.paymentAmount+=parseFloat(e.cost)*parseFloat(e.wareNum);
+            this.processObj = JSON.parse(sessionStorage.processObj);
+            this.getData("paymentRequestForm/getViewObj", {id: this.processObj.relationid}, function (data) {
+                vm.obj = data.obj;
+                vm.$set(vm.obj, 'paymentAmount', 0);
+                vm.list = [];
+                data.list.forEach(function (e) {
+                    vm.obj.paymentAmount += parseFloat(e.cost) * parseFloat(e.wareNum);
                     vm.list.push(e);
                 })
             })

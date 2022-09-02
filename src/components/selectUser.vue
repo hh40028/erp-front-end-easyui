@@ -43,64 +43,66 @@
 
 <script>
 export default {
-    props:['input','username','organizationid'],
+    props: ['input', 'username', 'organizationid'],
     name: "app",
     data() {
         return {
             pageSize: 15,
             pageNumber: 1,
-            filterString:'',
+            filterString: '',
             loading: false,
-            data:[],
-            total:0
+            data: [],
+            total: 0
         }
     },
     created: function () {
-        if(!this.input){
+        if (!this.input) {
             this.loadPage(this.pageNumber, this.pageSize);
         }
     },
-    computed:{
-        getUsername:function (){
+    computed: {
+        getUsername: function () {
             return this.username;
         }
     },
     methods: {
-        load(){
+        load() {
             this.$refs.selectUserDlg.open();
             this.loadPage(this.pageNumber, this.pageSize);
         },
-        open(){
+        open() {
             this.$refs.selectUserDlg.open();
         },
         onPageChange(event) {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("api/getUserinfoList", {
-                tablename:'userinfoview',
+                tablename: 'userinfoview',
                 limit: pageSize,
-                offset: pageSize * (pageNumber-1),
+                offset: pageSize * (pageNumber - 1),
                 sort: "id",
                 direction: "desc",
                 filterString: this.filterString,
-                organizationid:this.organizationid>0?this.organizationid:0
+                organizationid: this.organizationid > 0 ? this.organizationid : 0
             }, function (data) {
                 vm.total = data.total;
-                vm.data=[];
+                vm.data = [];
                 data.children.forEach(function (e) {
                     vm.data.push(e);
                 })
                 vm.loading = false;
             })
         },
-        selectItem(obj){
-            this.$emit('selectUser',obj);
+        selectItem(obj) {
+            this.$emit('selectUser', obj);
             // this.$refs.selectUserDlg.close();
         },
-        openDlg(){
+        openDlg() {
             this.$refs.selectUserDlg.open();
             this.loadPage(this.pageNumber, this.pageSize);
         }

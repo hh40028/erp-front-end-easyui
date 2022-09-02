@@ -46,11 +46,11 @@ export default {
         selectOrg(org) {
             this.org = org;
             let vm = this;
-            this.getData("api/getListByOrganizationid", {organizationid:this.org.id}, function (data) {
-                vm.user=data;
+            this.getData("api/getListByOrganizationid", {organizationid: this.org.id}, function (data) {
+                vm.user = data;
             })
         },
-        selectUser(obj){
+        selectUser(obj) {
             this.$emit('selectUser', obj);
         }
     }

@@ -4,7 +4,7 @@
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
                 <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -110,6 +110,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("receiptOrder/getQueryList", {
@@ -134,14 +136,18 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
-        loadItems(obj){
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
+        },
+        loadItems(obj) {
             let vm = this;
-            this.getData("orderForm/getOrderFormByReceiptOrderId", {receiptOrderId:obj.id}, function (data) {
-                vm.$set(obj,'items',data);
+            this.getData("orderForm/getOrderFormByReceiptOrderId", {receiptOrderId: obj.id}, function (data) {
+                vm.$set(obj, 'items', data);
             })
         },
         getItemRowCss(row) {
-            if (parseFloat(row.settlement)===parseFloat(row.jdPrice)) {
+            if (parseFloat(row.settlement) === parseFloat(row.jdPrice)) {
                 return {background: "#e1ffe0"};
             }
             return null;

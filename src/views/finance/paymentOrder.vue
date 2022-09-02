@@ -40,13 +40,13 @@
                 <GridColumn field="amount" title="付款金额" align="right">
                     <template slot="body" slot-scope="scope">
                         <div class="item">
-                            {{ toMoney(scope.row.amount,'￥') }}
+                            {{ toMoney(scope.row.amount, '￥') }}
                         </div>
                     </template>
                 </GridColumn>
                 <GridColumn field="wipezero" title="优惠金额" align="right">
                     <template slot="body" slot-scope="scope">
-                        <div class="item">{{ toMoney(scope.row.wipezero,'￥') }}
+                        <div class="item">{{ toMoney(scope.row.wipezero, '￥') }}
                         </div>
                     </template>
                 </GridColumn>
@@ -133,6 +133,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             let url = 'paymentorder/getQueryList';
@@ -163,13 +165,13 @@ export default {
         },
         selectSupplier(obj) {
             let vm = this;
-            this.getData("statement/getPayableOverage", {unitid:obj.id}, function (data) {
+            this.getData("statement/getPayableOverage", {unitid: obj.id}, function (data) {
                 vm.$set(vm.obj, 'unitid', obj.id);
                 vm.$set(vm.obj, 'name', obj.name);
-                if(!data){
+                if (!data) {
                     vm.$set(vm.obj, 'overage', 0);
-                }else{
-                    vm.$set(vm.obj, 'overage',data.credit);
+                } else {
+                    vm.$set(vm.obj, 'overage', data.credit);
                 }
             })
         },
@@ -177,7 +179,7 @@ export default {
             this.$set(this.obj, 'accountid', obj.id);
             this.$set(this.obj, 'accountname', obj.name);
         },
-        selectUser(obj){
+        selectUser(obj) {
             this.$set(this.obj, 'manager', obj.id);
             this.$set(this.obj, 'managername', obj.username);
         },

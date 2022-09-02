@@ -23,8 +23,8 @@
 <script>
     function userLogin() {
         $.ajax({
-            // url: 'http://erpserver.fuservice.com/api/login',
-            url: 'http://localhost:8080/api/login',
+            url: 'http://116.196.112.7/api/login',
+            // url: 'http://localhost:8080/api/login',
             type: "post",
             data: {loginname: $('#loginname').val(), password: $('#password').val()},
             async: true,

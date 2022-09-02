@@ -28,7 +28,7 @@ export default {
     },
     created: function () {
         let vm = this;
-        this.bus.$on('login', function(data) {
+        this.bus.$on('login', function (data) {
             vm.$refs.loginDlg.open();
         })
     },

@@ -69,8 +69,8 @@ export default {
             type: Object,
             default: {}
         },
-        list:{
-            type:Array,
+        list: {
+            type: Array,
             default: []
         }
     },

@@ -36,14 +36,15 @@
 
 <script>
 import selectUser from '@/components/selectUser.vue';
+
 export default {
     name: "app",
     data() {
         return {
             roles: [],
-            userroles:[],
-            selectRole:{},
-            obj:{}
+            userroles: [],
+            selectRole: {},
+            obj: {}
         }
     },
     created: function () {
@@ -64,30 +65,30 @@ export default {
                 vm.selection(vm.roles[0]);
             })
         },
-        selection(role){
+        selection(role) {
             let vm = this;
-            this.selectRole=role;
-            this.getData("userrole/getViewList", {roleid:role.id}, function (data) {
-                vm.userroles=data;
+            this.selectRole = role;
+            this.getData("userrole/getViewList", {roleid: role.id}, function (data) {
+                vm.userroles = data;
                 console.log(vm.userroles);
             })
         },
-        selectUser(obj){
+        selectUser(obj) {
             let vm = this;
-            this.getData("userrole/save", {roleid:this.selectRole.id,userid:obj.id}, function (data) {
+            this.getData("userrole/save", {roleid: this.selectRole.id, userid: obj.id}, function (data) {
                 vm.selection(vm.selectRole);
             })
         },
-        add(){
+        add() {
             this.$refs.selectUserCom.open();
         },
-        selectObj(obj){
-            this.obj=obj;
+        selectObj(obj) {
+            this.obj = obj;
         },
-        removeObj(){
+        removeObj() {
             let vm = this;
             this.confirm('确认吗?', function () {
-                vm.getData("userrole/delete", {id:vm.obj.id}, function (data) {
+                vm.getData("userrole/delete", {id: vm.obj.id}, function (data) {
                     vm.selection(vm.selectRole);
                 })
             })

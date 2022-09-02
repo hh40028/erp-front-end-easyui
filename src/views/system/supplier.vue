@@ -1,12 +1,18 @@
 <template>
     <Layout bodyCls="f-column" :border="false">
-        <LayoutPanel region="west" bodyCls="f-column" style="width: 20%">
+        <LayoutPanel region="north" bodyCls="f-column" :border="false">
             <Panel :bodyStyle="{padding:'3px'}" :border="false">
-                <LinkButton iconCls="icon-add" :plain="true" @click="addObj">新建</LinkButton>
+                <ButtonGroup selectionMode="single">
+                    <LinkButton iconCls="icon-add" @click="addObj">新建</LinkButton>
+                    <LinkButton iconCls="icon-edit" :disabled="!obj.id" @click="editObj">编辑</LinkButton>
+                </ButtonGroup>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
+        </LayoutPanel>
+        <LayoutPanel region="center" bodyCls="f-column" :border="false" style="height:100%">
+
             <DataGrid :data="data" :border="false"
                       class="f-full"
                       :columnResizing="true"
@@ -20,90 +26,108 @@
                       @pageChange="onPageChange($event)"
                       :pagination="true"
                       :pagePosition="'bottom'">
-                <GridColumn field='name' title='供应商名称' width="40" align="left"></GridColumn>
+                <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.rowIndex + 1 }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='name' title='名称' width="320" align="left"></GridColumn>
+                <GridColumn field='contactperson' title='联系人' width="120" align="center"></GridColumn>
+                <GridColumn field='contactnumber' title='联系电话' width="120" align="center"></GridColumn>
+                <GridColumn field='province' title='省' width="100" align="center"></GridColumn>
+                <GridColumn field='city' title='市' width="100" align="center"></GridColumn>
+                <GridColumn field='county' title='区县' width="100" align="center"></GridColumn>
+                <GridColumn field='address' title='地址' width="320" align="left"></GridColumn>
+                <GridColumn field='receivingBank' title='收款银行' width="120" align="center"></GridColumn>
+                <GridColumn field='receivingAccount' title='收款账号' width="120" align="center"></GridColumn>
+                <GridColumn field='payee' title='收款人' width="120" align="center"></GridColumn>
+                <GridColumn field='paymentdays' title='账期(天)' width="120" align="center"></GridColumn>
+                <GridColumn field='createTime' title='创建时间' width="120" align="center"></GridColumn>
             </DataGrid>
         </LayoutPanel>
-        <LayoutPanel region="center" bodyCls="f-column" :border="false" style="height:100%">
-            <Layout bodyCls="f-column" style="height:100%" :border="false">
-                <LayoutPanel region="north" :border="false">
-                    <Panel :bodyStyle="{padding:'8px'}" :border="false">
-                        <LinkButton iconCls="icon-edit" @click="editObj" v-show="!obj.edit">编辑</LinkButton>
-                        <LinkButton iconCls="icon-save" @click="save" v-show="obj.edit">保存</LinkButton>
-                        <LinkButton iconCls="icon-cancel" style="margin-left: 10px" @click="cancelObj" v-show="obj.edit">取消</LinkButton>
-                    </Panel>
-                    <div style="margin-bottom: 30px">
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>供应商编号</label><br>
-                            <input type="text" v-model="obj.number" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>名称</label><br>
-                            <input type="text" v-model="obj.name" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>联系人</label><br>
-                            <input type="text" v-model="obj.contactperson" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>联系电话</label><br>
-                            <input type="text" v-model="obj.contactnumber" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>账期(天)</label><br>
-                            <input type="text" v-model="obj.paymentdays" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>省</label><br>
-                            <input type="text" v-model="obj.province" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>市</label><br>
-                            <input type="text" v-model="obj.city" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>区县</label><br>
-                            <input type="text" v-model="obj.county" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>地址</label><br>
-                            <input type="text" v-model="obj.address" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>收款银行</label><br>
-                            <input type="text" v-model="obj.receivingBank" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>收款账号</label><br>
-                            <input type="text" v-model="obj.receivingAccount" class="form-control">
-                        </div>
-                        <div class="col-4 p-t-15 p-l-15 p-r-15">
-                            <label>收款人</label><br>
-                            <input type="text" v-model="obj.payee" class="form-control">
-                        </div>
-                    </div>
-                </LayoutPanel>
-                <LayoutPanel region="center" style="height:100%;padding-top: 30px" :border="false">
-                    <Panel v-show="obj.id>0" title="员工列表" :bodyStyle="{padding:'8px'}">
-                        <LinkButton iconCls="icon-add" @click="addUser">新增</LinkButton>
-                        <LinkButton iconCls="icon-edit" style="margin-left: 10px" :toggle="true" :disabled="!userObj.id" @click="editUser">编辑</LinkButton>
-                    </Panel>
-                    <DataGrid :data="users" :border="false"
-                              selectionMode="single"
-                              @selectionChange="selectUser($event)"
-                              class="f-full">
-                        <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
-                            <template slot="body" slot-scope="scope">
-                                {{ scope.rowIndex + 1 }}
-                            </template>
-                        </GridColumn>
-                        <GridColumn field='name' title='员工姓名' width="120" align="center"></GridColumn>
-                        <GridColumn field='phoneNumber' title='手机号' width="220" align="center"></GridColumn>
-                        <GridColumn field='password' title='登录密码' width="220" align="center"></GridColumn>
-                        <GridColumn field='remark' title='备注信息' align="center"></GridColumn>
-                    </DataGrid>
-                </LayoutPanel>
-            </Layout>
+        <LayoutPanel region="south" style="height:30%;" bodyCls="f-column" :border="false">
+            <Panel v-show="obj.id>0" title="员工列表" :bodyStyle="{padding:'8px'}">
+                <LinkButton iconCls="icon-add" @click="addUser">新增</LinkButton>
+                <LinkButton iconCls="icon-edit" style="margin-left: 10px" :toggle="true" :disabled="!userObj.id" @click="editUser">编辑</LinkButton>
+            </Panel>
+            <DataGrid :data="users" :border="false"
+                      selectionMode="single"
+                      @selectionChange="selectUser($event)"
+                      class="f-full">
+                <GridColumn align="center" cellCss="datagrid-td-rownumber" width="30">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.rowIndex + 1 }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='name' title='员工姓名' width="120" align="center"></GridColumn>
+                <GridColumn field='phoneNumber' title='手机号' width="220" align="center"></GridColumn>
+                <GridColumn field='password' title='登录密码' width="220" align="center"></GridColumn>
+                <GridColumn field='remark' title='备注信息' align="center"></GridColumn>
+            </DataGrid>
         </LayoutPanel>
+
+        <Dialog ref="editObjDlg" closed
+                :title="'编辑供应商信息'"
+                :dialogStyle="{width:'800px',height:'600px'}"
+                bodyCls="f-column"
+                :draggable="true"
+                :resizable="true"
+                :modal="true">
+            <div class="f-full">
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>供应商编号</label><br>
+                    <input type="text" v-model="obj.number" readonly class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <span style="color: red">*</span><label>名称</label><br>
+                    <input type="text" v-model="obj.name" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>联系人</label><br>
+                    <input type="text" v-model="obj.contactperson" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>联系电话</label><br>
+                    <input type="text" v-model="obj.contactnumber" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>账期(天)</label><br>
+                    <input type="text" v-model="obj.paymentdays" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>省</label><br>
+                    <input type="text" v-model="obj.province" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>市</label><br>
+                    <input type="text" v-model="obj.city" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>区县</label><br>
+                    <input type="text" v-model="obj.county" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>地址</label><br>
+                    <input type="text" v-model="obj.address" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>收款银行</label><br>
+                    <input type="text" v-model="obj.receivingBank" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>收款账号</label><br>
+                    <input type="text" v-model="obj.receivingAccount" class="form-control">
+                </div>
+                <div class="col-6 p-t-15 p-l-15 p-r-15">
+                    <label>收款人</label><br>
+                    <input type="text" v-model="obj.payee" class="form-control">
+                </div>
+            </div>
+            <div class="dialog-button">
+                <LinkButton style="width:80px" @click="saveObj">保存</LinkButton>
+                <LinkButton style="width:80px" @click="$refs.editObjDlg.close()">关闭</LinkButton>
+            </div>
+        </Dialog>
         <Dialog ref="editUserDlg" closed
                 :title="'编辑供应商员工信息'"
                 :dialogStyle="{width:'400px',height:'400px'}"
@@ -146,7 +170,7 @@ export default {
     data() {
         return {
             total: 0,
-            pageSize: 15,
+            pageSize: 20,
             pageNumber: 1,
             data: [],
             loading: false,
@@ -173,6 +197,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             let url = 'supplier/getQueryList';
@@ -188,6 +214,9 @@ export default {
                 data.children.forEach(function (e) {
                     vm.data.push(e);
                 })
+                vm.users=[];
+                vm.obj={};
+                vm.userObj={};
                 vm.loading = false;
             })
         },
@@ -195,38 +224,41 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
+        },
         add() {
             this.obj = {};
-            this.$refs.editSupplierDlg.open();
+            this.$refs.editObjDlg.open();
         },
         edit() {
             this.$refs.editSupplierDlg.open();
         },
         selectObj(obj) {
             this.obj = this.clone(obj);
-            this.userObj={};
+            this.userObj = {};
             this.loadUserList();
         },
-        loadUserList(){
+        loadUserList() {
             let vm = this;
-            this.getData("supplierUser/getList", {supplierId:this.obj.id}, function (data) {
-                vm.users=data;
+            this.getData("supplierUser/getList", {supplierId: this.obj.id}, function (data) {
+                vm.users = data;
             })
         },
         changeStatus(obj) {
             this.obj = this.clone(obj);
             this.save();
         },
-        save() {
+        saveObj() {
             let vm = this;
             this.getData("supplier/save", this.obj, function (data) {
-                vm.obj.version=vm.obj.version+1;
-                vm.loadPage(vm.pageNumber, vm.pageSize);
-                this.$set(obj, 'edit', false);
+                vm.$refs.editObjDlg.close();
+                vm.loadPage(1, vm.pageSize);
             })
         },
         editObj() {
-            this.$set(this.obj, 'edit', true);
+            this.$refs.editObjDlg.open();
         },
         cancelObj() {
             this.$set(this.obj, 'edit', false);
@@ -240,20 +272,21 @@ export default {
         },
         saveUser() {
             let vm = this;
-            this.userObj.supplierId=this.obj.id;
+            this.userObj.supplierId = this.obj.id;
             this.getData("supplierUser/save", this.userObj, function (data) {
                 vm.$refs.editUserDlg.close();
-                vm.userObj={};
+                vm.userObj = {};
                 vm.loadUserList();
             })
         },
-        selectUser(obj){
-            this.userObj=this.clone(obj);
+        selectUser(obj) {
+            this.userObj = this.clone(obj);
         },
-        addObj(){
-            this.obj={edit:true};
-            this.users=[];
-            this.userObj={};
+        addObj() {
+            this.obj = {};
+            this.$refs.editObjDlg.open();
+            this.users = [];
+            this.userObj = {};
         }
     },
     watch: {

@@ -3,15 +3,15 @@
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
                 <select v-model="warehouseId" style="width: 200px" class="form-control" @change="loadPage(pageNumber,pageSize)">
-                    <option v-for="w in warehouseList" :key="w.id" :value="w.id">{{w.name}}</option>
+                    <option v-for="w in warehouseList" :key="w.id" :value="w.id">{{ w.name }}</option>
                 </select>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
         <LayoutPanel region="south">
-            <div class="col-12 p-5 text-right">本页合计金额: {{toMoney(pageAmount,'')}}元，库存总计金额: {{toMoney(totalAmount,'')}}元</div>
+            <div class="col-12 p-5 text-right">本页合计金额: {{ toMoney(pageAmount, '') }}元，库存总计金额: {{ toMoney(totalAmount, '') }}元</div>
         </LayoutPanel>
         <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
             <DataGrid :data="data" style="width:100%;height:250px" :border="false"
@@ -51,7 +51,7 @@
                 </GridColumn>
                 <GridColumn field="totalAmount" title='合计金额' width="120" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.stockprice*scope.row.stockcount, '') }}
+                        {{ toMoney(scope.row.stockprice * scope.row.stockcount, '') }}
                     </template>
                 </GridColumn>
             </DataGrid>
@@ -75,9 +75,9 @@ export default {
             timeout: null,
             filterString: '',
             warehouseList: [],
-            warehouseId:0,
-            pageAmount:0,
-            totalAmount:0
+            warehouseId: 0,
+            pageAmount: 0,
+            totalAmount: 0
         }
     },
     components: {
@@ -91,9 +91,9 @@ export default {
         loadWarehouseList() {
             let vm = this;
             this.getData("warehouse/getList", {}, function (data) {
-                vm.warehouseList = [{id:0,name:'全部仓库'}];
-                data.forEach(function (e){
-                    if(e.status){
+                vm.warehouseList = [{id: 0, name: '全部仓库'}];
+                data.forEach(function (e) {
+                    if (e.status) {
                         vm.warehouseList.push(e);
                     }
                 })
@@ -103,6 +103,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("stock/getQueryList", {
@@ -111,21 +113,25 @@ export default {
                 sort: "id",
                 direction: "desc",
                 filterString: this.filterString,
-                warehouseId:this.warehouseId
+                warehouseId: this.warehouseId
             }, function (data) {
                 vm.total = data.total;
                 vm.data = [];
-                vm.pageAmount=0
+                vm.pageAmount = 0
                 data.children.forEach(function (e) {
-                    vm.pageAmount+=parseFloat(e.stockprice)*parseFloat(e.stockcount);
+                    vm.pageAmount += parseFloat(e.stockprice) * parseFloat(e.stockcount);
                     vm.data.push(e);
                 })
-                vm.totalAmount=data.totalAmount;
+                vm.totalAmount = data.totalAmount;
                 vm.loading = false;
             })
         },
         selectObj(obj) {
             this.obj = this.clone(obj);
+        },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
         },
         filter(filterString) {
             this.filterString = filterString;

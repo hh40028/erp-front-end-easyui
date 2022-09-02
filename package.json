@@ -15,6 +15,8 @@
     "less": "^3.13.1",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.5",
+    "vue-datetime-picker": "^0.2.1",
+    "vue-md-date-picker": "^1.0.16",
     "vue-router": "^3.5.2",
     "vx-easyui": "^1.2.28"
   },

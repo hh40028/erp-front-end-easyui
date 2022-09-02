@@ -1,18 +1,18 @@
 <template>
     <Layout bodyCls="f-column" :border="false">
-<!--        <LayoutPanel region="east" style="width:20%;">-->
-<!--            <p class="text-center" v-if="!warehouse.id">选择左面仓库显示货位树</p>-->
-<!--            <Panel :bodyStyle="{padding:'5px'}" :border="false" v-if="warehouse.id>0">-->
-<!--                <LinkButton iconCls="icon-add" :plain="true" @click="addCargolocation">下级货位</LinkButton>-->
-<!--                &lt;!&ndash;                    <LinkButton iconCls="icon-edit" :plain="true" @click="editCargolocation">编辑</LinkButton>&ndash;&gt;-->
-<!--                <LinkButton iconCls="icon-remove" :plain="true" @click="deleteCargolocation">删除</LinkButton>-->
-<!--                &lt;!&ndash;                    <LinkButton iconCls="icon-reload" :plain="true" @click="reloadCargolocation">刷新</LinkButton>&ndash;&gt;-->
-<!--            </Panel>-->
-<!--            <div class="p-10">-->
-<!--                <Tree :data="cargolocations"-->
-<!--                      @selectionChange="selectCargolocation($event)"></Tree>-->
-<!--            </div>-->
-<!--        </LayoutPanel>-->
+        <!--        <LayoutPanel region="east" style="width:20%;">-->
+        <!--            <p class="text-center" v-if="!warehouse.id">选择左面仓库显示货位树</p>-->
+        <!--            <Panel :bodyStyle="{padding:'5px'}" :border="false" v-if="warehouse.id>0">-->
+        <!--                <LinkButton iconCls="icon-add" :plain="true" @click="addCargolocation">下级货位</LinkButton>-->
+        <!--                &lt;!&ndash;                    <LinkButton iconCls="icon-edit" :plain="true" @click="editCargolocation">编辑</LinkButton>&ndash;&gt;-->
+        <!--                <LinkButton iconCls="icon-remove" :plain="true" @click="deleteCargolocation">删除</LinkButton>-->
+        <!--                &lt;!&ndash;                    <LinkButton iconCls="icon-reload" :plain="true" @click="reloadCargolocation">刷新</LinkButton>&ndash;&gt;-->
+        <!--            </Panel>-->
+        <!--            <div class="p-10">-->
+        <!--                <Tree :data="cargolocations"-->
+        <!--                      @selectionChange="selectCargolocation($event)"></Tree>-->
+        <!--            </div>-->
+        <!--        </LayoutPanel>-->
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'5px'}" :border="false">
                 <LinkButton iconCls="icon-add" :plain="true" class="m-r-5" @click="add">新建</LinkButton>

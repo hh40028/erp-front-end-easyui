@@ -79,21 +79,21 @@
                                   :rowCss="getRowCss"
                                   class="f-full"
                                   :columnResizing="true">
-                            <GridColumn field='customOrderId' title='订单编号' width="120" align="center"></GridColumn>
-<!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
-                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
+                            <GridColumn field='customOrderId' title='订单编号' width="150" align="center"></GridColumn>
+                            <!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
+<!--                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>-->
                             <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
                             <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
-                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
-                            <GridColumn title='合计金额' width="100" align="right">
+<!--                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>-->
+                            <GridColumn title='订货金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.jdPrice, '') }}
+                                    {{ toMoney(scope.row.total, '') }}
                                 </template>
                             </GridColumn>
                             <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
-                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
+<!--                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>-->
                             <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
-                            <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
+                            <GridColumn field='address' title='收货地址' align="left"></GridColumn>
                             <GridColumn title='结算金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
                                     {{ toMoney(scope.row.settlement, '') }}
@@ -170,7 +170,7 @@ export default {
                 vm.$set(vm.obj, 'totalAmount', 0);
                 vm.list = [];
                 data.list.forEach(function (e) {
-                    vm.obj.totalAmount += parseFloat(e.jdPrice);
+                    vm.obj.totalAmount += parseFloat(e.total);
                     vm.list.push(e);
                 })
             })
@@ -188,7 +188,7 @@ export default {
             let total = parseFloat(this.obj.amount);
             this.list.forEach(function (e) {
                 vm.$set(e, 'settlement', 0);
-                let amount = parseFloat(e.jdPrice);
+                let amount = parseFloat(e.total);
                 if (total >= amount) {
                     e.settlement = amount;
                     total -= amount;
@@ -197,7 +197,7 @@ export default {
             this.over = total;
         },
         getRowCss(row) {
-            if (parseFloat(row.jdPrice) === parseFloat(row.settlement)) {
+            if (parseFloat(row.total) === parseFloat(row.settlement)) {
                 return {background: "#a8fea2"};
             }
             return null;
@@ -211,7 +211,8 @@ export default {
                     message: '收款完成',
                     processVariables: JSON.stringify({}),
                     obj: JSON.stringify(vm.obj),
-                    rows: JSON.stringify(vm.list)
+                    rows: JSON.stringify(vm.list),
+                    over:vm.over
                 }, function (data) {
                     vm.$router.push('index');
                 })

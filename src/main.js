@@ -12,6 +12,9 @@ import filters from './assets/js/filter.js';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import EasyUI from 'vx-easyui';
+import 'summernote';
+import 'summernote/dist/lang/summernote-zh-CN.js';
+import 'summernote/dist/summernote.css';
 
 Object.keys(filters).forEach(k => Vue.filter(k, filters[k]));
 Vue.use(VueAxios, axios);
@@ -130,6 +133,30 @@ Vue.prototype.alert = function (msg, func) {
         }
     });
 };
+
+Vue.prototype.jsonSort=function (array, field, reverse) {
+    //数组长度小于2 或 没有指定排序字段 或 不是json格式数据
+    if (array.length < 2 || !field || typeof array[0] !== "object") return array;
+    //数字类型排序
+    if (typeof array[0][field] === "number") {
+        array.sort(function (x, y) {
+            return x[field] - y[field]
+        });
+    }
+    //字符串类型排序
+    if (typeof array[0][field] === "string") {
+        array.sort(function (x, y) {
+            if (!!x[field]) {
+                return x[field].localeCompare(y[field])
+            }
+        });
+    }
+    //倒序
+    if (reverse) {
+        array.reverse();
+    }
+    return array;
+}
 //克隆对象
 Vue.prototype.clone = function (obj) {
     let o;
@@ -173,8 +200,8 @@ Vue.prototype.clone = function (obj) {
 new Vue({
     data() {
         return {
-            // basePath: 'http://erpserver.fuservice.com/',
-            basePath: 'http://localhost:8080/',
+            basePath: 'http://116.196.112.7/',
+            // basePath: 'http://localhost:8080/',
             uesrObj: undefined,
             menu: {text: '首页'},
             twomenu: {},

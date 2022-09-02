@@ -142,17 +142,17 @@ export default {
                 vm.loadList(vm.organizationid);
             })
         },
-        moveOrg(){
+        moveOrg() {
             if (!this.user.id) {
                 this.alert("请选择一个用户");
             } else {
                 this.$refs.selectOrganization.open();
             }
         },
-        selectOrganization(org){
+        selectOrganization(org) {
             let vm = this;
-            this.confirm(this.user.username+'调离至'+org.name+',确认吗?', function () {
-                vm.getData("api/moveOrg", {userid:vm.user.id,orgid:org.id}, function (data) {
+            this.confirm(this.user.username + '调离至' + org.name + ',确认吗?', function () {
+                vm.getData("api/moveOrg", {userid: vm.user.id, orgid: org.id}, function (data) {
                     vm.loadList(vm.organizationid);
                 })
             })

@@ -94,7 +94,7 @@
                     <LinkButton style="width:80px" @click="$refs.editGroupDlg.close()">关闭</LinkButton>
                 </div>
             </Dialog>
-<!--            <selectUser ref="selectUserCom" username="" @selectUser="selectUser"></selectUser>-->
+            <!--            <selectUser ref="selectUserCom" username="" @selectUser="selectUser"></selectUser>-->
         </LayoutPanel>
     </Layout>
 </template>
@@ -104,10 +104,10 @@ export default {
     name: "app",
     data() {
         return {
-            powerGroups:[],
-            powers:[],
-            group:{},
-            power:{},
+            powerGroups: [],
+            powers: [],
+            group: {},
+            power: {},
             total: 0,
             pageSize: 25,
             pageNumber: 1,
@@ -125,7 +125,7 @@ export default {
         loadPowerGroups: function () {
             let vm = this;
             this.getData("sys/getPowerGroupList", {}, function (data) {
-                vm.powerGroups=[];
+                vm.powerGroups = [];
                 data.forEach(function (e) {
                     vm.powerGroups.push({id: e.id, text: e.name});
                 })
@@ -139,6 +139,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             let url = 'sys/getPowers';
@@ -157,41 +159,41 @@ export default {
                 vm.loading = false;
             })
         },
-        selectObj(obj){
-            this.power=this.clone(obj);
+        selectObj(obj) {
+            this.power = this.clone(obj);
         },
-        editPower(){
+        editPower() {
             this.$refs.editDlg.open();
         },
-        savePower(){
+        savePower() {
             let vm = this;
             this.getData("sys/savePower", this.power, function (data) {
                 vm.$refs.editDlg.close();
                 vm.loadPage(vm.pageNumber, vm.pageSize);
             })
         },
-        clickGroup(obj){
-            this.$set(this.power,'groupname',obj.text);
-            this.$set(this.power,'groupid',obj.id);
+        clickGroup(obj) {
+            this.$set(this.power, 'groupname', obj.text);
+            this.$set(this.power, 'groupid', obj.id);
             console.log(this.power);
             this.$refs.selectGroupDlg.close();
         },
-        addGroup(){
-            this.group={};
+        addGroup() {
+            this.group = {};
             this.$refs.editGroupDlg.open();
         },
-        editGroup(){
+        editGroup() {
             this.$refs.editGroupDlg.open();
         },
-        saveGroup(){
+        saveGroup() {
             let vm = this;
-            this.getData("sys/savePowerGroup", {id:this.group.id,name:this.group.text}, function (data) {
+            this.getData("sys/savePowerGroup", {id: this.group.id, name: this.group.text}, function (data) {
                 vm.$refs.editGroupDlg.close();
                 vm.loadPowerGroups();
             })
         },
-        selectGroup(obj){
-            this.group=this.clone(obj);
+        selectGroup(obj) {
+            this.group = this.clone(obj);
         }
     }
 }

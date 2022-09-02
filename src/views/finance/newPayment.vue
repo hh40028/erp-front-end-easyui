@@ -80,8 +80,8 @@ export default {
     },
     methods: {
         save() {
-            let vm=this;
-            this.confirm("确认吗?",function (){
+            let vm = this;
+            this.confirm("确认吗?", function () {
                 vm.getData("paymentOrder/savePaymentOrder", vm.obj, function (data) {
                     vm.msg('操作成功');
                     vm.$router.push('paymentList');
@@ -92,15 +92,15 @@ export default {
             this.$refs.selectSupplierDlg.open();
         },
         selectSupplier(obj) {
-            let vm=this;
+            let vm = this;
             this.$set(this.obj, 'unitId', obj.id);
             this.$set(this.obj, 'unitName', obj.name);
             this.$refs.selectSupplierDlg.close();
-            this.getData("statement/getPayableOverage", {unitid:obj.id}, function (data) {
-                if(data){
-                    vm.$set(vm.obj,'over',data.credit);
-                }else{
-                    vm.$set(vm.obj,'over',0);
+            this.getData("statement/getPayableOverage", {unitid: obj.id}, function (data) {
+                if (data) {
+                    vm.$set(vm.obj, 'over', data.credit);
+                } else {
+                    vm.$set(vm.obj, 'over', 0);
                 }
             })
         },

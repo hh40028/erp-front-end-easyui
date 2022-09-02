@@ -6,7 +6,6 @@ import nav from '../views/nav.vue'
 import emptyToNav from '../views/emptyToNav.vue'
 import empty from '../views/empty.vue'
 import selectCommodity from '../components/selectCommodity.vue'
-import shangPinGuanLi from '../views/commodity/shangPinGuanLi.vue'
 import warehouseSet from '../views/system/warehouseSet.vue'
 import purchaseOrderList from '../views/purchase/purchaseOrderList.vue'
 import orgSet from '../views/system/orgSet.vue'
@@ -25,6 +24,7 @@ import logisticsCompany from '../views/system/logisticsCompany.vue'
 import logisticsType from '../views/system/logisticsType.vue'
 import jiekou from '../views/system/jiekou.vue'
 import orderFormReview from '../views/sale/orderFormReview.vue'
+import myOrderForm from '../views/sale/myOrderForm.vue'
 import offlineOrder from '../views/sale/offlineOrder.vue'
 import customerSet from '../views/system/customerSet.vue'
 import newPaymentRequestForm from '../views/purchase/newPaymentRequestForm.vue'
@@ -47,6 +47,19 @@ import PaymentOrderSponsor from '../views/process/payment/PaymentOrderSponsor.vu
 import financeReceivePayment from '../views/process/receipt/financeReceivePayment.vue'
 import receivePaymentInitiator from '../views/process/receipt/receivePaymentInitiator.vue'
 import supervisorApproval from '../views/process/receipt/supervisorApproval.vue'
+import mainBodySet from '../views/system/mainBodySet.vue'
+import brandSet from '../views/system/brandSet.vue'
+import type3 from '../views/system/type3.vue'
+import orderFormItem from '../views/sale/orderFormItem.vue'
+import myCommodity from '../views/commoditynew/myCommodity.vue'
+import newCommodity from '../views/commoditynew/newCommodity.vue'
+import newCommodityList from '../views/commoditynew/newCommodityList.vue'
+import commoditynewList from '../views/commoditynew/commoditynewList.vue'
+import uploadPic from '../views/pic/uploadPic.vue'
+import buyerList from '../views/system/buyerList.vue'
+import incompleteCommoditynewList from '../views/commoditynew/incompleteCommoditynewList.vue'
+import commodityChangeManager from '../views/process/CommodityAffiliationChangeProcess/commodityChangeManager.vue'
+import commodityChangeOwner from '../views/process/CommodityAffiliationChangeProcess/commodityChangeOwner.vue'
 
 Vue.use(VueRouter)
 
@@ -58,7 +71,6 @@ const routes = [
   {path: '/empty', name: 'empty', component: empty},
   {path: '/nav', name: 'nav', component: nav},
   {path: '/selectCommodity', name: 'selectCommodity', component: selectCommodity},
-  {path: '/shangPinGuanLi', name: 'shangPinGuanLi', component: shangPinGuanLi},
   {path: '/warehouseSet', name: 'warehouseSet', component: warehouseSet},
   {path: '/purchaseOrderList', name: 'purchaseOrderList', component: purchaseOrderList},
   {path: '/orgSet', name: 'orgSet', component: orgSet},
@@ -99,6 +111,20 @@ const routes = [
   {path: '/newStockTransferOrder', name: 'newStockTransferOrder', component: newStockTransferOrder},
   {path: '/directstorageList', name: 'directstorageList', component: directstorageList},
   {path: '/newDirectstorage', name: 'newDirectstorage', component: newDirectstorage},
+  {path: '/mainBodySet', name: 'mainBodySet', component: mainBodySet},
+  {path: '/brandSet', name: 'brandSet', component: brandSet},
+  {path: '/type3', name: 'type3', component: type3},
+  {path: '/orderFormItem', name: 'orderFormItem', component: orderFormItem},
+  {path: '/myCommodity', name: 'myCommodity', component: myCommodity},
+  {path: '/myOrderForm', name: 'myOrderForm', component: myOrderForm},
+  {path: '/newCommodity', name: 'newCommodity', component: newCommodity},
+  {path: '/newCommodityList', name: 'newCommodityList', component: newCommodityList},
+  {path: '/commoditynewList', name: 'commoditynewList', component: commoditynewList},
+  {path: '/uploadPic', name: 'uploadPic', component: uploadPic},
+  {path: '/buyerList', name: 'buyerList', component: buyerList},
+  {path: '/incompleteCommoditynewList', name: 'incompleteCommoditynewList', component: incompleteCommoditynewList},
+  {path: '/commodityChangeManager', name: 'commodityChangeManager', component: commodityChangeManager},
+  {path: '/commodityChangeOwner', name: 'commodityChangeOwner', component: commodityChangeOwner},
 ]
 
 const router = new VueRouter({

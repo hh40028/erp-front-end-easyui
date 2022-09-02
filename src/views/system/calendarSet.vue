@@ -44,7 +44,7 @@ export default {
         return {
             year: 0,
             month: 0,
-            weeks:0,
+            weeks: 0,
             data: []
         }
     },
@@ -62,8 +62,8 @@ export default {
                 yue: this.month
             }, function (data) {
                 vm.data = data;
-                if(vm.data.length>0){
-                    vm.weeks=vm.data[0].week-1;
+                if (vm.data.length > 0) {
+                    vm.weeks = vm.data[0].week - 1;
                 }
             })
         },
@@ -91,8 +91,8 @@ export default {
                 vm.load();
             })
         },
-        changeHolidays(obj){
-            obj.holidays=!obj.holidays;
+        changeHolidays(obj) {
+            obj.holidays = !obj.holidays;
             let vm = this;
             this.getData("calendar/save", obj, function (data) {
 
@@ -113,8 +113,9 @@ export default {
     font-size: 30px;
     /*border: 1px solid red;*/
     text-align: center;
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(0, 0, 0, 0.05);
 }
+
 .col7-title {
     margin: 2px;
     padding: 3px;
@@ -124,6 +125,6 @@ export default {
     line-height: 50px;
     /*border: 1px solid red;*/
     text-align: center;
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(0, 0, 0, 0.05);
 }
 </style>

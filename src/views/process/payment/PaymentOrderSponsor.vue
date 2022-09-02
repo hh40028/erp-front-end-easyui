@@ -1,5 +1,5 @@
 <template>
-    <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false" >
+    <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
         <LayoutPanel region="north" :border="false">
             <Panel :title="processObj.pdname" bodyCls="f-column" :border="false">
                 <div style="padding: 5px">
@@ -76,15 +76,15 @@ export default {
         viewPaymentRequestFrom, selectOrganizationUser
     },
     methods: {
-        send(){
-            let vm=this;
+        send() {
+            let vm = this;
             this.$refs.processDlg.close();
-            this.confirm('撤回申请,确认吗?',function (){
+            this.confirm('撤回申请,确认吗?', function () {
                 vm.getData("sys/nextTask", {
                     taskid: vm.processObj.id,
                     operationname: '撤销流程',
                     message: '',
-                    processVariables:JSON.stringify({})
+                    processVariables: JSON.stringify({})
                 }, function (data) {
                     vm.$router.push('index');
                 })

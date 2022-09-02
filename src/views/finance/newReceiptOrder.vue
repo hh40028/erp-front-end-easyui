@@ -80,8 +80,8 @@ export default {
     },
     methods: {
         save() {
-            let vm=this;
-            this.confirm("确认吗?",function (){
+            let vm = this;
+            this.confirm("确认吗?", function () {
                 vm.getData("receiptOrder/save", vm.obj, function (data) {
                     vm.msg('操作成功');
                     vm.$router.push('receiptOrder');
@@ -92,15 +92,15 @@ export default {
             this.$refs.selectCustomerDlg.open();
         },
         selectCustomer(obj) {
-            let vm=this;
+            let vm = this;
             this.$set(this.obj, 'unitid', obj.id);
             this.$set(this.obj, 'unitname', obj.name);
             this.$refs.selectCustomerDlg.close();
-            this.getData("statement/getReceivableOverage", {unitid:obj.id}, function (data) {
-                if(data){
-                    vm.$set(vm.obj,'over',data.debit);
-                }else{
-                    vm.$set(vm.obj,'over',0);
+            this.getData("statement/getReceivableOverage", {unitid: obj.id}, function (data) {
+                if (data) {
+                    vm.$set(vm.obj, 'over', data.debit);
+                } else {
+                    vm.$set(vm.obj, 'over', 0);
                 }
             })
         },

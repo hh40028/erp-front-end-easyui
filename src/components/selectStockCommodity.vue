@@ -30,7 +30,7 @@
         </GridColumn>
         <GridColumn title='商品单价' width="120" align="right">
             <template slot="body" slot-scope="scope">
-                {{ toMoney(scope.row.totalAmount/scope.row.totalcount, '') }}
+                {{ toMoney(scope.row.totalAmount / scope.row.totalcount, '') }}
             </template>
         </GridColumn>
         <GridColumn field="totalAmount" title='合计金额' width="120" align="right">
@@ -43,10 +43,10 @@
 
 <script>
 export default {
-    props:{
-        warehouseid:{
-            type:Number,
-            default:0
+    props: {
+        warehouseid: {
+            type: Number,
+            default: 0
         }
     },
     name: "app",
@@ -69,6 +69,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("stock/getQueryList", {
@@ -77,7 +79,7 @@ export default {
                 sort: "id",
                 direction: "desc",
                 filterString: this.filterString,
-                warehouseId:this.warehouseid
+                warehouseId: this.warehouseid
             }, function (data) {
                 vm.total = data.total;
                 vm.data = [];

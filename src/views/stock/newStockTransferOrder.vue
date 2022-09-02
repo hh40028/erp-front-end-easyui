@@ -101,15 +101,15 @@ export default {
     methods: {
         save() {
             let vm = this;
-            let flag=false;
-            this.data.forEach(function (e){
-                if(e.stockCount<e.count){
-                    flag=true;
+            let flag = false;
+            this.data.forEach(function (e) {
+                if (e.stockCount < e.count) {
+                    flag = true;
                 }
             })
-            if(flag){
+            if (flag) {
                 this.alert('调拨数量超出库存数量');
-            }else{
+            } else {
                 this.confirm("调拨库存商品,确认吗?", function () {
                     vm.getData("stockTransferOrder/save", {
                         obj: JSON.stringify(vm.obj),
@@ -136,7 +136,7 @@ export default {
         openOutWarehouseCommodity() {
             if (!this.obj.outWarehouseId) {
                 this.msg('请选择出货仓库');
-            }else{
+            } else {
                 this.$refs.selectStockCommodityDlg.open();
             }
         },

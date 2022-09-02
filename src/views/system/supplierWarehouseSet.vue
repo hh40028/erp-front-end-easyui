@@ -5,7 +5,7 @@
                 <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>
                 <LinkButton iconCls="icon-edit" :disabled="!obj.id" :plain="true" @click="edit">编辑</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -101,7 +101,7 @@ export default {
             loading: false,
             obj: {},
             timeout: null,
-            filterString:''
+            filterString: ''
         }
     },
     components: {
@@ -135,6 +135,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("supplierWarehouse/getQueryList", {
@@ -184,6 +186,10 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
+        },
     }
 }
 </script>
@@ -193,7 +199,8 @@ export default {
     border: 1px solid #F44336
     /*background-color: #ff9992*/
 }
-.c-red{
+
+.c-red {
     color: red;
 }
 </style>

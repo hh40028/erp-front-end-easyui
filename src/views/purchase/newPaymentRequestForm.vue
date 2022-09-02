@@ -44,22 +44,34 @@
                                @change="changeCheck(scope.row)">
                     </template>
                 </GridColumn>
+                <GridColumn field='orderNumber' title='单据编号' width="140" align="center"></GridColumn>
                 <GridColumn field='customOrderId' title='订单编号' width="160" align="center"></GridColumn>
-                <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
-                <GridColumn field='commodityName' title='商品名称' align="left"></GridColumn>
-                <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                <GridColumn field="cost" title='单价' width="100" align="right">
+                <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
+                <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
+                <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
+                <GridColumn field="purchasePrice" title='单价' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.cost, '') }}
+                        {{ toMoney(scope.row.purchasePrice, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn title='合计金额' width="100" align="right">
+                <GridColumn title='合计金额' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                        {{ toMoney(scope.row.purchasePrice * scope.row.wareNum, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn field='createTime' title='递交时间' width="200" align="center"></GridColumn>
-                <GridColumn field='deliveryTime' title='发货时间' width="200" align="center"></GridColumn>
+                <GridColumn title='结算金额' width="80" align="right">
+                    <template slot="body" slot-scope="scope">
+                        {{ toMoney(scope.row.settlement, '') }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='submitTime' title='递交时间' width="150" align="center"></GridColumn>
+                <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
+                <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
+                <GridColumn field='address' title='收货地址' width="120" align="left"></GridColumn>
+                <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
+                <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
+                <GridColumn field='shippingTime' title='发货时间' width="150" align="center"></GridColumn>
+                <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
             </DataGrid>
         </LayoutPanel>
 
@@ -70,7 +82,7 @@
                 bodyCls="f-column"
                 :draggable="true"
                 :resizable="true">
-            <selectSupplier ref="selectSupplierCom" @selectSupplier="selectSupplier"></selectSupplier>
+            <selectSupplier ref="selectSupplierCom" hide-add="true" @selectSupplier="selectSupplier"></selectSupplier>
         </Dialog>
     </Layout>
 </template>
@@ -95,17 +107,17 @@ export default {
     },
     methods: {
         save() {
-            let vm=this;
-            this.confirm("确认吗?",function (){
-                let arr=[];
-                vm.data.forEach(function (e){
-                    if(e.selected){
+            let vm = this;
+            this.confirm("确认吗?", function () {
+                let arr = [];
+                vm.data.forEach(function (e) {
+                    if (e.selected) {
                         arr.push(e);
                     }
                 })
                 vm.getData("paymentRequestForm/save", {
-                    obj:JSON.stringify(vm.obj),
-                    rows:JSON.stringify(arr)
+                    obj: JSON.stringify(vm.obj),
+                    rows: JSON.stringify(arr)
                 }, function (data) {
                     vm.msg('操作成功');
                     vm.$router.push('paymentRequestForm');
@@ -130,14 +142,15 @@ export default {
         },
         loadPurchaseOrderList(unitId) {
             let vm = this;
-            this.getData("supplierPurchaseOrder/getListBySupplierId", {supplierId: unitId}, function (data) {
+            this.getData("orderFormItem/getSupplierDeliveryNotSettlementList", {supplierId: unitId}, function (data) {
                 vm.data = [];
-                data.forEach(function (e){
-                    vm.$set(e,'selected',false);
+                console.log(data);
+                data.forEach(function (e) {
+                    vm.$set(e, 'selected', false);
                     vm.data.push(e);
                 })
-                vm.allSelected=false;
-                vm.$set(vm.obj,'paymentAmount',0);
+                vm.allSelected = false;
+                vm.$set(vm.obj, 'paymentAmount', 0);
                 console.log(vm.data);
             })
         },
@@ -149,18 +162,18 @@ export default {
             })
             this.calcPaymentAmount();
         },
-        calcPaymentAmount(){
-            this.$set(this.obj,'paymentAmount',0);
+        calcPaymentAmount() {
+            this.$set(this.obj, 'paymentAmount', 0);
             let vm = this;
             this.data.forEach(function (e) {
-                vm.$set(e,'settlement',0);
-                if(e.selected){
-                    vm.obj.paymentAmount+=e.wareNum*e.cost;
-                    e.settlement=e.wareNum*e.cost;
+                vm.$set(e, 'settlement', 0);
+                if (e.selected) {
+                    vm.obj.paymentAmount += e.wareNum * e.purchasePrice;
+                    e.settlement = e.wareNum * e.purchasePrice;
                 }
             })
         },
-        changeCheck(row){
+        changeCheck(row) {
             this.calcPaymentAmount();
         }
     }

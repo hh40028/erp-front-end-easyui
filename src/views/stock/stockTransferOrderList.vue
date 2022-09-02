@@ -4,7 +4,7 @@
             <Panel :bodyStyle="{padding:'8px',lineHeight:'30px'}" :border="false">
                 <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -127,6 +127,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("stockTransferOrder/getQueryList", {
@@ -149,6 +151,10 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
+        },
         selectItem(obj) {
             this.obj = this.clone(obj);
         },
@@ -158,10 +164,10 @@ export default {
         edit() {
             this.$refs.editDlg.open();
         },
-        loadItems(obj){
+        loadItems(obj) {
             let vm = this;
-            this.getData("stockTransferOrderChild/getMaps", {pid:obj.id}, function (data) {
-                vm.$set(obj,'items',data);
+            this.getData("stockTransferOrderChild/getMaps", {pid: obj.id}, function (data) {
+                vm.$set(obj, 'items', data);
             })
         },
     }

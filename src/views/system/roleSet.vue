@@ -1,6 +1,6 @@
 <template>
     <Layout bodyCls="f-column" :border="false">
-        <LayoutPanel region="west" style="width:25%;" :border="false" bodyCls="f-column" >
+        <LayoutPanel region="west" style="width:25%;" :border="false" bodyCls="f-column">
             <Panel title="角色列表" :bodyStyle="{padding:'0'}" class="f-full">
                 <Panel :bodyStyle="{padding:'5px'}" :border="false">
                     <LinkButton iconCls="icon-add" :plain="true" @click="addRole">新增</LinkButton>
@@ -13,7 +13,7 @@
             <Panel title="权限组列表" :bodyStyle="{padding:'0'}" class="f-full">
                 <div class="col-3 p-10" v-for="pg in powerGroups" v-if="role.id>0">
                     <input type="checkbox" v-model="pg.checked" @change="savePowerGroups">
-                    <label>{{pg.name}}</label>
+                    <label>{{ pg.name }}</label>
                 </div>
             </Panel>
             <Dialog ref="editRoleDlg" closed
@@ -56,9 +56,9 @@ export default {
         loadPowerGroups: function () {
             let vm = this;
             this.getData("sys/getPowerGroupList", {}, function (data) {
-                vm.powerGroups=[];
+                vm.powerGroups = [];
                 data.forEach(function (e) {
-                    vm.$set(e,'checked',false);
+                    vm.$set(e, 'checked', false);
                     vm.powerGroups.push(e);
                 })
                 console.log(vm.powerGroups);
@@ -69,7 +69,7 @@ export default {
             this.getData("sys/getRoleList", {}, function (data) {
                 vm.roles = [];
                 data.forEach(function (e) {
-                    vm.$set(e,'text',e.name);
+                    vm.$set(e, 'text', e.name);
                     vm.roles.push(e);
                 })
                 console.log(vm.roles);
@@ -78,8 +78,8 @@ export default {
         addRole() {
             this.$refs.editRoleDlg.open();
             this.role = {};
-            this.powerGroups.forEach(function (e){
-                vm.$set(e,'checked',false);
+            this.powerGroups.forEach(function (e) {
+                vm.$set(e, 'checked', false);
             })
         },
         editRole() {
@@ -93,29 +93,29 @@ export default {
         saveRole() {
 
         },
-        changeCheck(){
+        changeCheck() {
             let vm = this;
-            let arr=this.role.groupids.split(",");
-            this.powerGroups.forEach(function (e){
-                vm.$set(e,'checked',false);
+            let arr = this.role.groupids.split(",");
+            this.powerGroups.forEach(function (e) {
+                vm.$set(e, 'checked', false);
             })
             for (let i = 0; i < arr.length; i++) {
-                this.powerGroups.forEach(function (e){
-                    if(e.id===parseInt(arr[i])){
-                        e.checked=true;
+                this.powerGroups.forEach(function (e) {
+                    if (e.id === parseInt(arr[i])) {
+                        e.checked = true;
                     }
                 })
             }
         },
-        savePowerGroups(){
-            let groupids='';
-            this.powerGroups.forEach(function (e){
-                if(e.checked){
-                    groupids+=e.id+',';
+        savePowerGroups() {
+            let groupids = '';
+            this.powerGroups.forEach(function (e) {
+                if (e.checked) {
+                    groupids += e.id + ',';
                 }
             })
-            this.$set(this.role,'groupids',groupids);
-            this.$set(this.role,'name',this.role.text);
+            this.$set(this.role, 'groupids', groupids);
+            this.$set(this.role, 'name', this.role.text);
             let vm = this;
             this.getData("sys/saveRole", this.role, function (data) {
                 vm.$refs.editRoleDlg.close();

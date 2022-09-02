@@ -21,7 +21,7 @@
 
 <script>
 export default {
-    props: ['input', 'dictname','type'],
+    props: ['input', 'dictname', 'type'],
     name: "app",
     data() {
         return {
@@ -34,10 +34,10 @@ export default {
         }
     },
     methods: {
-        loadList(){
+        loadList() {
             let vm = this;
-            this.getData("api/getDictListByKey", {key:this.type}, function (data) {
-                vm.dicts=data;
+            this.getData("api/getDictListByKey", {key: this.type}, function (data) {
+                vm.dicts = data;
             })
         },
         open() {

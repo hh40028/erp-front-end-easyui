@@ -86,23 +86,33 @@
                                     {{ scope.rowIndex + 1 }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='customOrderId' title='订单编号' width="120" align="center"></GridColumn>
-                            <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
+                            <GridColumn field='orderNumber' title='单据编号' width="140" align="center"></GridColumn>
+                            <GridColumn field='customOrderId' title='订单编号' width="160" align="center"></GridColumn>
+                            <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
                             <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
-                            <GridColumn field='wareNum' title='数量' width="100" align="center"></GridColumn>
-                            <GridColumn field="cost" title='单价' width="100" align="right">
+                            <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
+                            <GridColumn field="purchasePrice" title='单价' width="80" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost, '') }}
+                                    {{ toMoney(scope.row.purchasePrice, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn title='合计金额' width="100" align="right">
+                            <GridColumn title='合计金额' width="80" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                                    {{ toMoney(scope.row.purchasePrice * scope.row.wareNum, '') }}
                                 </template>
                             </GridColumn>
-                            <GridColumn field='createTime' title='递交时间' width="200" align="center"></GridColumn>
-                            <GridColumn field='deliveryTime' title='发货时间' width="200" align="center"></GridColumn>
-                            <GridColumn field='settlement' title='结算金额' width="100" align="center" :editable="true"></GridColumn>
+                            <GridColumn field='submitTime' title='递交时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='sendType' title='送货方式' width="150" align="center">
+                                <template slot="body" slot-scope="scope">
+                                    {{ scope.row.sendType ? "快递" : "送货" }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
+                            <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
+                            <GridColumn field='deliveryPhone' title='送货电话' width="120" align="center"></GridColumn>
+                            <GridColumn field='shippingTime' title='发货时间' width="150" align="center"></GridColumn>
+                            <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
+                            <GridColumn field='settlement' title='结算金额' width="100" align="center"></GridColumn>
                         </DataGrid>
                     </LayoutPanel>
                 </Layout>
@@ -174,7 +184,7 @@ export default {
                 vm.$set(vm.obj, 'totalAmount', 0);
                 vm.list = [];
                 data.list.forEach(function (e) {
-                    vm.obj.totalAmount += parseFloat(e.cost) * parseFloat(e.wareNum);
+                    vm.obj.totalAmount += parseFloat(e.purchasePrice) * parseFloat(e.wareNum);
                     vm.list.push(e);
                 })
             })
@@ -189,19 +199,19 @@ export default {
         },
         calc() {
             let vm = this;
-            let total = parseFloat(this.obj.actualPaymentAmount);
+            let total = parseFloat(this.obj.actualPaymentAmount) * 10000;
             this.list.forEach(function (e) {
                 vm.$set(e, 'settlement', 0);
-                let amount = parseFloat(e.wareNum) * parseFloat(e.cost);
+                let amount = parseFloat(e.wareNum) * parseFloat(e.purchasePrice) * 10000;
                 if (total >= amount) {
-                    e.settlement = amount;
+                    e.settlement = amount / 10000;
                     total -= amount;
                 }
             })
-            this.over = total;
+            this.over = total / 10000;
         },
         getRowCss(row) {
-            if (parseFloat(row.wareNum) * parseFloat(row.cost) === parseFloat(row.settlement)) {
+            if (parseFloat(row.wareNum) * parseFloat(row.purchasePrice) === parseFloat(row.settlement)) {
                 return {background: "#a8fea2"};
             }
             return null;
@@ -215,7 +225,8 @@ export default {
                     message: '付款完成',
                     processVariables: JSON.stringify({}),
                     obj: JSON.stringify(vm.obj),
-                    rows: JSON.stringify(vm.list)
+                    rows: JSON.stringify(vm.list),
+                    over:vm.over
                 }, function (data) {
                     vm.$router.push('index');
                 })

@@ -6,7 +6,7 @@
                 <LinkButton iconCls="icon-edit" :plain="true" @click="edit" :disabled="!obj.id || obj.finish">编辑订单</LinkButton>
                 <LinkButton iconCls="icon-ok" :plain="true" @click="finish" :disabled="!obj.id || obj.finish">完成订单</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -31,91 +31,100 @@
                     </template>
                 </GridColumn>
                 <GridColumn field='customOrderId' title='订单编号' width="120" align="center" :frozen="true"></GridColumn>
-                <GridColumn field='customerName' title='客户名称' width="120" align="center"></GridColumn>
-                <GridColumn field='consigneeName' title='收货人姓名' width="120" align="center"></GridColumn>
-                <GridColumn field='expectedDeliveryTime' title='期望送货时间' width="140" align="center"></GridColumn>
+                <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>
+                <GridColumn field='consigneeName' title='收货人' width="100" align="center"></GridColumn>
                 <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
                 <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
                 <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
-                <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
-                <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
-                <GridColumn field='finish' title='完成状态' width="120" align="center"></GridColumn>
-                <GridColumn field='finishTime' title='完成时间' width="120" align="center"></GridColumn>
+                <GridColumn field='expectedDeliveryTime' title='期望送货时间' width="150" align="center"></GridColumn>
+                <GridColumn field='pay' title='订货金额' align="right" width="100">
+                    <template slot="body" slot-scope="scope">
+                        {{ toMoney(scope.row.pay, '') }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='orderRemark' title='备注' align="left"></GridColumn>
             </DataGrid>
         </LayoutPanel>
         <LayoutPanel region="south" style="height:30%;" bodyCls="f-column" :border="false">
-            <Layout bodyCls="f-column" style="height: calc(100vh - 52px)" :border="false">
-                <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
-                    <Tabs :plain="false" :narrow="false" :justified="false" style="height:100%" bodyCls="f-column">
-                        <TabPanel :title="'货品列表'" bodyCls="f-column">
-                            <Panel class="f-full" :border="false" bodyCls="f-column">
-                                <DataGrid :data="items" :border="false"
-                                          :columnResizing="true"
-                                          :rowCss="getItemRowCss"
-                                          class="f-full">
-                                    <GridColumn title="编辑" align="center" width="80">
-                                        <template slot="body" slot-scope="scope">
-                                            <div>
-                                                <a v-if="scope.row.sendSupplier" @click="editItem(scope.row)" style="color:red;margin-left: 10px">编辑</a>
-                                            </div>
-                                        </template>
-                                    </GridColumn>
-                                    <GridColumn title="操作" align="center" width="80">
-                                        <template slot="body" slot-scope="scope">
-                                            <div v-if="!scope.row.logisticsCompanyName || !scope.row.logisticsNumber || !scope.row.deliveryTime">
-                                                <a v-if="!scope.row.sendSupplier" @click="testSend(scope.row)" style="color:green">发送供应商</a>
-                                                <a v-if="scope.row.sendSupplier" @click="cancelProcess(scope.row)" style="color:red;margin-left: 10px">撤回</a>
-                                            </div>
-                                            <div v-if="scope.row.logisticsCompanyName && scope.row.logisticsNumber && scope.row.deliveryTime">
-                                                <a style="color:green">已发货</a>
-                                            </div>
-                                        </template>
-                                    </GridColumn>
-                                    <GridColumn field='number' title='单据编号' width="120" align="center"></GridColumn>
-                                    <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
-                                    <GridColumn field='upc' title='商品UPC编号' width="120" align="center"></GridColumn>
-                                    <GridColumn field='commodityName' title='商品名称' width="120" align="center"></GridColumn>
-                                    <GridColumn field='wareNum' title='商品数量' width="60" align="center"></GridColumn>
-                                    <GridColumn field='jdPrice' title='商品售价' width="100" align="right">
-                                        <template slot="body" slot-scope="scope">
-                                            {{ toMoney(scope.row.jdPrice, '') }}
-                                        </template>
-                                    </GridColumn>
-                                   <GridColumn title='合计金额' width="100" align="right">
-                                        <template slot="body" slot-scope="scope">
-                                            {{ toMoney(scope.row.wareNum * scope.row.jdPrice, '') }}
-                                        </template>
-                                    </GridColumn>
-                                    <GridColumn field='cost' title='采购价' width="100" align="right">
-                                        <template slot="body" slot-scope="scope">
-                                            {{ toMoney(scope.row.cost, '') }}
-                                        </template>
-                                    </GridColumn>
-                                    <GridColumn field='supplierName' title='供应商' width="120" align="center"></GridColumn>
-                                    <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
-                                    <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
-                                    <GridColumn field='deliveryTime' title='发货时间' width="120" align="center"></GridColumn>
-                                </DataGrid>
-                            </Panel>
-                        </TabPanel>
-                        <TabPanel :title="'订单日志'">
-                            <Panel class="f-full" :border="false">
-                                <DataGrid :data="logs" :border="false"
-                                          :columnResizing="true"
-                                          class="f-full">
-                                    <GridColumn field='username' title='操作人' width="60" align="center"></GridColumn>
-                                    <GridColumn field='operateTime' title='操作时间' :sortable="true" width="220" align="center"></GridColumn>
-                                    <GridColumn field='operate' title='操作信息' align="left"></GridColumn>
-                                </DataGrid>
-                            </Panel>
-                        </TabPanel>
-                        <TabPanel :title="'错误信息'">
-                            <Panel class="f-full" :border="false">
-                            </Panel>
-                        </TabPanel>
-                    </Tabs>
-                </LayoutPanel>
-            </Layout>
+            <Tabs :plain="false" :narrow="false" :justified="false" style="height:100%" bodyCls="f-column">
+                <TabPanel :title="'货品列表'" bodyCls="f-column">
+                    <Panel class="f-full" :border="false" bodyCls="f-column">
+                        <DataGrid :data="items" :border="false"
+                                  :columnResizing="true"
+                                  :rowCss="getItemRowCss"
+                                  class="f-full">
+                            <GridColumn title="编辑" align="center" width="80">
+                                <template slot="body" slot-scope="scope">
+                                    <div>
+                                        <a v-if="scope.row.sendSupplier" @click="editItem(scope.row)" style="color:red;margin-left: 10px">编辑</a>
+                                    </div>
+                                </template>
+                            </GridColumn>
+                            <GridColumn title="操作" align="center" width="80">
+                                <template slot="body" slot-scope="scope">
+                                    <div v-if="!scope.row.logisticsCompanyName || !scope.row.logisticsNumber || !scope.row.deliveryTime">
+                                        <a v-if="!scope.row.sendSupplier" @click="testSend(scope.row)" style="color:green">发送供应商</a>
+                                        <a v-if="scope.row.sendSupplier" @click="cancelProcess(scope.row)" style="color:red;margin-left: 10px">撤回</a>
+                                    </div>
+                                    <div v-if="scope.row.logisticsCompanyName && scope.row.logisticsNumber && scope.row.deliveryTime">
+                                        <a style="color:green">已发货</a>
+                                    </div>
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='orderNumber' title='单据编号' width="120" align="center"></GridColumn>
+                            <GridColumn field='sku' title='SKU编号' width="120" align="center"></GridColumn>
+                            <GridColumn field='commodityName' title='商品名称' width="320" align="left"></GridColumn>
+                            <GridColumn field='wareNum' title='商品数量' width="60" align="center"></GridColumn>
+                            <GridColumn field='cost' title='销售价' width="100" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.cost, '') }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn title='销售价合计' width="100" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.wareNum * scope.row.cost, '') }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='purchasePrice' title='进货价' width="100" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.purchasePrice, '') }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn title='进货价合计' width="100" align="right">
+                                <template slot="body" slot-scope="scope">
+                                    {{ toMoney(scope.row.purchasePrice * scope.row.wareNum, '') }}
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='supplierName' title='供应商' width="180" align="left"></GridColumn>
+                            <GridColumn field='sendType' title='送货方式' width="120" align="center">
+                                <template slot="body" slot-scope="scope">
+                                    <span v-show="scope.row.deliveryPhone || scope.row.logisticsNumber">{{ scope.row.sendType ? "快递" : "送货" }}</span>
+                                </template>
+                            </GridColumn>
+                            <GridColumn field='deliveryPhone' title='送货电话' width="120" align="center"></GridColumn>
+                            <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
+                            <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
+                            <GridColumn field='shippingTime' title='发货时间' width="160" align="center"></GridColumn>
+                            <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
+                        </DataGrid>
+                    </Panel>
+                </TabPanel>
+                <TabPanel :title="'订单日志'">
+                    <Panel class="f-full" :border="false">
+                        <DataGrid :data="logs" :border="false"
+                                  :columnResizing="true"
+                                  class="f-full">
+                            <GridColumn field='username' title='操作人' width="60" align="center"></GridColumn>
+                            <GridColumn field='operateTime' title='操作时间' :sortable="true" width="220" align="center"></GridColumn>
+                            <GridColumn field='operate' title='操作信息' align="left"></GridColumn>
+                        </DataGrid>
+                    </Panel>
+                </TabPanel>
+                <TabPanel :title="'错误信息'">
+                    <Panel class="f-full" :border="false">
+                    </Panel>
+                </TabPanel>
+            </Tabs>
         </LayoutPanel>
         <Dialog ref="editOrderFormDlg" closed
                 :title="'编辑线下订单'"
@@ -129,12 +138,13 @@
                     <LayoutPanel region="north" style="height:100px;" :border="true">
                         <div class="row">
                             <div class="col-4 p-t-15 p-l-15 p-r-15">
-                                <label>客户名称</label><br>
-                                <input type="text" v-model="obj.customerName" class="form-control" readonly @click="openSelectCustomer">
+                                <label>客户名称 <span :class="{'c-red':!obj.customerId}">*</span></label><br>
+                                <input type="text" v-model="obj.customerName" :class="{'b-red':!obj.customerId}" class="form-control" readonly @click="openSelectCustomer">
                             </div>
                             <div class="col-4 p-t-15 p-l-15 p-r-15">
-                                <label>期望送货时间</label><br>
-                                <input type="datetime-local" v-model="obj.expectedDeliveryTime" class="form-control">
+                                <label>期望送货时间 <span :class="{'c-red':!obj.expectedDeliveryTime}">*</span></label><br>
+                                <selectDateTime :value="obj.expectedDeliveryTime" @selectDT="selectDT"></selectDateTime>
+                                <!--                                <input type="datetime-local" v-model="obj.expectedDeliveryTime" :class="{'b-red':!obj.expectedDeliveryTime}" class="form-control">-->
                             </div>
                             <div class="col-4 p-t-15 p-l-15 p-r-15">
                                 <label>订单备注</label><br>
@@ -163,12 +173,10 @@
                                         <a @click="removeChangeCommodity(scope.rowIndex)" style="color:red" v-if="!scope.row.sendSupplier">删除</a>
                                     </template>
                                 </GridColumn>
-                                <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
-                                <GridColumn field='upc' title='商品UPC编号' width="120" align="center"></GridColumn>
-                                <GridColumn field='commodityName' title='商品名称' width="120" align="center"></GridColumn>
-                                <GridColumn field='wareNum' title='商品数量' width="120" align="center" :editable="true"></GridColumn>
-                                <GridColumn field='jdPrice' title='售价' width="120" align="center" :editable="true"></GridColumn>
-                                <GridColumn field='cost' title='采购价' width="120" align="center" :editable="true"></GridColumn>
+                                <GridColumn field='commodityName' title='商品名称' width="320" align="left"></GridColumn>
+                                <GridColumn field='wareNum' title='商品数量' width="120" align="center" :editable="true" :cellCss="getCellCss"></GridColumn>
+                                <GridColumn field='cost' title='销售价' width="120" align="center" :editable="true" :cellCss="getCellCss"></GridColumn>
+                                <GridColumn field='purchasePrice' title='采购价' width="120" align="center" :editable="true" :cellCss="getCellCss"></GridColumn>
                                 <GridColumn field='supplierName' title='供应商' width="120" align="center"></GridColumn>
                             </DataGrid>
                         </Panel>
@@ -177,10 +185,10 @@
             </div>
             <div class="dialog-button">
                 <LinkButton style="width:80px" @click="saveOrderForm">保存</LinkButton>
+                <LinkButton style="width:80px" v-if="obj.id>0" @click="deleteOrderForm">删除</LinkButton>
                 <LinkButton style="width:80px" @click="$refs.editOrderFormDlg.close()">关闭</LinkButton>
             </div>
         </Dialog>
-
         <Dialog bodyCls="f-column" ref="selectCommoditySupplierDlg" closed
                 :title="'选择一个供应商'"
                 :draggable="true"
@@ -198,18 +206,15 @@
                             {{ scope.rowIndex + 1 }}
                         </template>
                     </GridColumn>
-                    <GridColumn field='suppliername' title='供应商' width="120" align="center"></GridColumn>
-                    <GridColumn field='finalPurchasePrice' title='最后采购价' width="120" align="center"></GridColumn>
-                    <GridColumn field='lastPurchasePrice' title='上次采购价' width="120" align="center"></GridColumn>
-                    <GridColumn field='lowestPurchasePrice' title='最低采购价' width="120" align="center"></GridColumn>
-                    <GridColumn field='retailPrice' title='零售价' width="120" align="center"></GridColumn>
-                    <GridColumn field='remark' title='备注' width="120" align="center"></GridColumn>
+                    <GridColumn field='suppliername' title='供应商' width="320" align="center"></GridColumn>
+                    <GridColumn field='lastPurchasePrice' title='采购价' width="120" align="center"></GridColumn>
+                    <GridColumn field='remark' title='备注' align="center"></GridColumn>
                 </DataGrid>
             </Layout>
         </Dialog>
         <Dialog bodyCls="f-column" ref="editDlg" closed
                 :title="'编辑信息'"
-                :dialogStyle="{width:'50vW',height:'40vH'}"
+                :dialogStyle="{width:'500px'}"
                 :draggable="true"
                 :resizable="true"
                 :modal="true">
@@ -221,35 +226,65 @@
                         <td class="text-left td" colspan="3">{{ editObj.commodityName }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right th">商品编号</th>
-                        <td class="text-left td">{{ editObj.sku }}</td>
                         <th class="text-right th">商品数量</th>
                         <td class="text-left td">{{ editObj.wareNum }}</td>
                     </tr>
                     <tr>
                         <th class="text-right th">供应商名称</th>
                         <td class="text-left td">{{ editObj.supplierName }}</td>
-                        <th class="text-right th">京东价</th>
-                        <td class="text-left td">{{ editObj.jdPrice }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right th">采购价</th>
+                        <th class="text-right th">销售价</th>
+                        <td class="text-left td">{{ toMoney(editObj.cost,'') }} 元</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">进货价</th>
                         <td class="text-left td">
-                            <input type="text" class="form-control" v-model="editObj.cost">
-                        </td>
-                        <th class="text-right th">发货时间</th>
-                        <td class="text-left td">
-                            <input type="datetime-local" class="form-control" v-model="editObj.deliveryTime">
+                            <NumberBox v-model="editObj.purchasePrice" :precision="2" :spinners="false">
+                                <Addon align="right">
+                                    <LinkButton :style="{borderRadius:0,borderWidth:'0 0 0 1px',width:'30px',height:'30px'}">元</LinkButton>
+                                </Addon>
+                            </NumberBox>
                         </td>
                     </tr>
                     <tr>
+                        <th class="text-right th">送货方式</th>
+                        <td class="text-left td">
+
+                            <ButtonGroup selectionMode="single">
+                                <LinkButton :toggle="true" :selected="editObj.sendType" @click="editObj.sendType=true">快递</LinkButton>
+                                <LinkButton :toggle="true" :selected="!editObj.sendType" @click="editObj.sendType=false">送货</LinkButton>
+                            </ButtonGroup>
+                        </td>
+                    </tr>
+                    <tr v-if="editObj.sendType">
                         <th class="text-right th">物流公司</th>
                         <td class="text-left td">
-                            <input type="text" class="form-control" v-model="editObj.logisticsCompanyName">
+                            <input type="text" class="form-control" readonly v-model="editObj.logisticsCompanyName" @click="openLogistics">
                         </td>
+                    </tr>
+                    <tr v-if="editObj.sendType">
                         <th class="text-right th">物流单号</th>
                         <td class="text-left td">
                             <input type="text" class="form-control" v-model="editObj.logisticsNumber">
+                        </td>
+                    </tr>
+                    <tr v-if="!editObj.sendType">
+                        <th class="text-right th">送货电话</th>
+                        <td class="text-left td">
+                            <input type="text" class="form-control" v-model="editObj.deliveryPhone">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">发货时间</th>
+                        <td class="text-left td">
+                            <selectDateTime :value="editObj.shippingTime" @selectDT="selectDeliveryTime"></selectDateTime>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-right th">预计到达日期</th>
+                        <td class="text-left td">
+                            <input type="date" v-model="editObj.estimatedArrivalDate" class="form-control">
                         </td>
                     </tr>
                     </tbody>
@@ -260,7 +295,6 @@
                 <LinkButton style="width:80px" @click="$refs.editDlg.close()">关闭</LinkButton>
             </div>
         </Dialog>
-
         <Dialog bodyCls="f-column" ref="selectCustomerDlg" closed
                 :title="'选择供应商'"
                 :dialogStyle="{width:'60vW',height:'50vH'}"
@@ -271,6 +305,22 @@
                 <selectCustomer ref="selectCustomerCom" @selectCustomer="selectCustomer"></selectCustomer>
             </div>
         </Dialog>
+        <Dialog ref="viewImgDlg" closed
+                :title="'商品图片'"
+                :draggable="true"
+                :resizable="true"
+                :dialogStyle="{width:'60%',height:'90%'}"
+                :modal="true">
+            <viewImgs ref="viewImgs" :commodity-id="huoPinObj.commodityId" @getImgPath="getImgPath"></viewImgs>
+        </Dialog>
+        <Dialog ref="selectLogisticsTypeDlg" closed
+                :title="'选择物流公司'"
+                :draggable="true"
+                :resizable="true"
+                :dialogStyle="{width:'300px',height:'60%'}"
+                :modal="true">
+            <selectLogisticsType ref="selectLogisticsTypeCom" tag="京东" @selectLogisticsType="selectLogisticsType"></selectLogisticsType>
+        </Dialog>
         <selectCommodity ref="selectCommodityCom" @selectCommodity="selectCommodity"></selectCommodity>
     </Layout>
 </template>
@@ -279,6 +329,9 @@
 import selectCommodity from '@/components/selectCommodity.vue';
 import selectCustomer from '@/components/selectCustomer.vue';
 import filterList from '@/components/filterList.vue';
+import viewImgs from '@/components/viewImgs.vue';
+import selectDateTime from '@/components/selectDateTime.vue';
+import selectLogisticsType from '@/components/selectLogisticsType.vue';
 
 export default {
     name: "app",
@@ -304,12 +357,12 @@ export default {
             changeItems: [],
             commoditySupplierList: [],
             addCommodityObj: {},
-            items2: [],
-            editObj:{}
+            editObj: {},
+            huoPinObj: {}
         }
     },
     components: {
-        filterList, selectCommodity, selectCustomer
+        filterList, selectCommodity, selectCustomer, viewImgs, selectDateTime, selectLogisticsType
     },
     created: function () {
         this.loadPage(this.pageNumber, this.pageSize);
@@ -319,6 +372,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("orderForm/getOfflineOrderQueryList", {
@@ -334,9 +389,9 @@ export default {
                     vm.data.push(e);
                     vm.$set(e, 'selected', false);
                 })
-                vm.obj={};
-                vm.items=[];
-                vm.changeItems=[];
+                vm.obj = {};
+                vm.items = [];
+                vm.changeItems = [];
                 vm.loading = false;
             })
         },
@@ -354,13 +409,17 @@ export default {
         },
         loadItems() {
             let vm = this;
-            this.getData("orderFormItem/getList", {orderFormId: this.obj.id}, function (data) {
+            this.getData("orderFormItem/getOfflineList", {orderFormId: this.obj.id}, function (data) {
                 vm.items = data.items;
             })
         },
         filter(filterString) {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
+        },
+        changePageSize(value) {
+            this.pageSize = value;
+            this.loadPage(1, this.pageSize);
         },
         getRowCss(row) {
             if (row.changeCommodityStarus) {
@@ -384,10 +443,12 @@ export default {
         },
         add() {
             this.obj = {};
+            this.changeItems = [];
             this.$refs.editOrderFormDlg.open();
         },
         edit() {
             this.changeItems = this.clone(this.items);
+            console.log(this.changeItems);
             let flag = false;
             this.changeItems.forEach(function (e) {
                 if (e.sendSupplier) {
@@ -424,22 +485,24 @@ export default {
             }
         },
         selectCommodity(obj) {
+
             let vm = this;
-            this.getData("commoditySupplier/getList", {commodityid: obj.id}, function (data) {
-                vm.commoditySupplierList = [];
-                if (!data.length) {
-                    vm.alert('商品没有设置供应商');
+            this.getData("commoditySupplier/getList", {commodityId: obj.id}, function (data) {
+                if (data.length === 0) {
+                    vm.alert('商品没有配置供应商');
                 } else {
+                    vm.commoditySupplierList = [];
                     if (data.length === 1) {
                         vm.changeItems.push({
                             id: 0,
                             commodityId: obj.id,
-                            sku: obj.wareid,
+                            sku: obj.wareId,
                             commodityName: obj.name,
                             wareNum: 0,
                             jdPrice: 0,
                             discount: 0,
-                            cost: data[0].lastPurchasePrice,
+                            cost: 0,
+                            purchasePrice: data[0].lastPurchasePrice,
                             supplierid: data[0].supplierid,
                             supplierName: data[0].suppliername
                         })
@@ -448,12 +511,13 @@ export default {
                         vm.addCommodityObj = {
                             id: 0,
                             commodityId: obj.id,
-                            sku: obj.wareid,
+                            sku: obj.wareId,
                             commodityName: obj.name,
                             wareNum: 0,
                             jdPrice: 0,
                             discount: 0,
-                            cost: 0
+                            cost: 0,
+                            purchasePrice: data[0].lastPurchasePrice,
                         }
                         vm.$refs.selectCommoditySupplierDlg.open();
                     }
@@ -463,14 +527,14 @@ export default {
         selectSupplier(obj) {
             this.$set(this.addCommodityObj, 'supplierid', obj.supplierid);
             this.$set(this.addCommodityObj, 'supplierName', obj.suppliername);
-            this.$set(this.addCommodityObj, 'cost', obj.lastPurchasePrice);
+            this.$set(this.addCommodityObj, 'purchasePrice', obj.lastPurchasePrice);
             this.changeItems.push(this.addCommodityObj);
             this.$refs.selectCommoditySupplierDlg.close();
         },
         testSend(obj) {
             let vm = this;
-            if (parseFloat(obj.cost) > parseFloat(obj.jdPrice)) {
-                if (confirm('采购价大于售价,确认啊?')) {
+            if (parseFloat(obj.cost) < parseFloat(obj.purchasePrice)) {
+                if (confirm('采购价大于销售价,确认啊?')) {
                     vm.sendSupplier(obj);
                 }
             } else {
@@ -480,7 +544,7 @@ export default {
         sendSupplier(obj) {
             let vm = this;
             this.confirm('递交供应商发货,确认吗?', function () {
-                vm.getData("orderFormItem/sendSupplier", {id: obj.id}, function (data) {
+                vm.getData("orderFormItem/sendSupplier", {obj: JSON.stringify(obj)}, function (data) {
                     vm.loadItems();
                 })
             })
@@ -488,7 +552,7 @@ export default {
         cancelProcess(obj) {
             let vm = this;
             this.confirm('撤回已发采购单,确认吗?', function () {
-                vm.getData("supplierPurchaseOrder/cancelProcess", {itemId: obj.id}, function (data) {
+                vm.getData("orderFormItem/cancelProcess", {itemId: obj.id}, function (data) {
                     vm.loadItems();
                 })
             })
@@ -511,12 +575,51 @@ export default {
             let vm = this;
             this.$refs.editDlg.close();
             this.confirm('直接更改发货信息,确认吗?', function () {
-                vm.getData("orderFormItem/modifyDirectly", {obj:JSON.stringify(vm.editObj)}, function (data) {
+                vm.getData("orderFormItem/modifyDirectly", {obj: JSON.stringify(vm.editObj)}, function (data) {
                     vm.editObj = {};
                     vm.loadItems();
                 })
             })
-        }
+        },
+        viewImg(obj) {
+            this.huoPinObj = obj;
+            this.$refs.viewImgDlg.open();
+        },
+        getImgPath(path) {
+            this.huoPinObj.imgPath = path;
+        },
+        getCellCss(row, value) {
+            if (!value) {
+                return {backgroundColor: "red"};
+            }
+            return null;
+        },
+        selectDT(obj) {
+            this.$set(this.obj, 'expectedDeliveryTime', obj);
+        },
+        deleteOrderForm() {
+            let vm = this;
+            this.confirm("删除订单,确认吗?", function () {
+                vm.getData("orderForm/delete", {id: vm.obj.id}, function (data) {
+                    vm.$refs.editOrderFormDlg.close();
+                    vm.loadPage(1, vm.pageSize);
+                    vm.obj = {};
+                    vm.items = [];
+                    vm.changeItems = [];
+                })
+            })
+        },
+        selectLogisticsType(obj) {
+            this.$set(this.editObj, 'logisticsId', obj.carriers_id);
+            this.$set(this.editObj, 'logisticsCompanyName', obj.carriers_name);
+            this.$refs.selectLogisticsTypeDlg.close();
+        },
+        openLogistics() {
+            this.$refs.selectLogisticsTypeDlg.open();
+        },
+        selectDeliveryTime(obj) {
+            this.$set(this.editObj, 'shippingTime', obj);
+        },
     }
 }
 </script>
@@ -534,13 +637,15 @@ export default {
 
 .th {
     border: 1px solid #ddd;
-    width: 12.5%;
-    padding: 3px;
+    width: 25%;
+    line-height: 30px;
+    padding: 5px;
 }
 
 .td {
     border: 1px solid #ddd;
-    width: 12.5%;
-    padding: 3px;
+    width: 75%;
+    line-height: 30px;
+    padding: 5px;
 }
 </style>

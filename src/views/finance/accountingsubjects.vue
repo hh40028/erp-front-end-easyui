@@ -7,30 +7,30 @@
                 <input type="radio" name="type" v-model="type" :value="'4'" @change="load" id="a3"><label for="a3" class="m-r-5">权益类</label>
                 <input type="radio" name="type" v-model="type" :value="'5'" @change="load" id="a4"><label for="a4" class="m-r-5">成本类</label>
                 <input type="radio" name="type" v-model="type" :value="'6'" @change="load" id="a5"><label for="a5" class="m-r-5">损益类</label>
-<!--                <LinkButton class="m-l-30" :disabled="!obj.id" iconCls="icon-edit" :plain="true" @click="edit">编辑</LinkButton>-->
-<!--                <LinkButton :disabled="!obj.id" iconCls="icon-add" :plain="true" @click="addChild">增加下级科目</LinkButton>-->
+                <!--                <LinkButton class="m-l-30" :disabled="!obj.id" iconCls="icon-edit" :plain="true" @click="edit">编辑</LinkButton>-->
+                <!--                <LinkButton :disabled="!obj.id" iconCls="icon-add" :plain="true" @click="addChild">增加下级科目</LinkButton>-->
             </div>
         </LayoutPanel>
         <LayoutPanel region="center" style="height:100%" bodyCls="f-column" :border="false">
             <TreeGrid
-                      class="f-full"
-                      :border="false"
-                      :striped="true"
-                      :columnResizing="true"
-                      selectionMode="single"
-                      :data="tree" @selectionChange="selectObj($event)"
-                      idField="id" treeField="name">
+                class="f-full"
+                :border="false"
+                :striped="true"
+                :columnResizing="true"
+                selectionMode="single"
+                :data="tree" @selectionChange="selectObj($event)"
+                idField="id" treeField="name">
                 <GridColumn field="id" title="主键" width="100"></GridColumn>
                 <GridColumn field="name" title="名称" width="200"></GridColumn>
                 <GridColumn field="number" title="编号" align="left" width="130"></GridColumn>
                 <GridColumn field="direction" title="余额方向" align="center" width="120">
                     <template slot="body" slot-scope="scope">
                         <div class="item">
-                            {{ scope.row.direction?"借":"贷" }}
+                            {{ scope.row.direction ? "借" : "贷" }}
                         </div>
                     </template>
                 </GridColumn>
-                <GridColumn  align="center" width="820"></GridColumn>
+                <GridColumn align="center" width="820"></GridColumn>
             </TreeGrid>
             <Dialog ref="editSubjectsDlg" closed
                     :title="'编辑科目'"
@@ -116,13 +116,13 @@ export default {
         },
         selectObj(obj) {
             this.obj = {
-                id:obj.id,
-                name:obj.name,
-                number:obj.number,
-                state:obj.state,
-                text:obj.text,
-                direction:obj.direction,
-                children:obj.children
+                id: obj.id,
+                name: obj.name,
+                number: obj.number,
+                state: obj.state,
+                text: obj.text,
+                direction: obj.direction,
+                children: obj.children
             };
         },
         edit() {
@@ -138,7 +138,7 @@ export default {
         addChild() {
             let vm = this;
             let maxNumber = 0;
-            if(this.obj.children){
+            if (this.obj.children) {
                 this.obj.children.forEach(function (e) {
                     if (e.number.substr(0, vm.obj.number.length) === vm.obj.number) {
                         if (parseInt(e.number) > maxNumber) {
@@ -147,7 +147,7 @@ export default {
                     }
                 })
             }
-            if (maxNumber===0) {
+            if (maxNumber === 0) {
                 maxNumber = this.obj.number + '01';
             } else {
                 ++maxNumber;

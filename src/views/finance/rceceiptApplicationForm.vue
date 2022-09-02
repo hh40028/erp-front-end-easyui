@@ -8,7 +8,7 @@
                 <LinkButton iconCls="icon-search" :plain="true" :disabled="!obj.id" @click="view">流程表</LinkButton>
                 <LinkButton iconCls="icon-undo" :plain="true" @click="cancel" :disabled="!(obj.id && obj.processId && !obj.processStatus)">撤回流程</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -62,15 +62,15 @@
                                   :rowCss="getItemRowCss"
                                   class="f-full"
                                   :columnResizing="true">
-                            <GridColumn field='customOrderId' title='订单编号' width="140" align="center"></GridColumn>
-<!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
-                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>
+                            <GridColumn field='customOrderId' title='订单编号' width="150" align="center"></GridColumn>
+                            <!--                            <GridColumn field='customerName' title='客户名称' width="220" align="left"></GridColumn>-->
+<!--                            <GridColumn field='orgName' title='负责机构' width="120" align="center"><></GridColumn>-->
                             <GridColumn field='principalName' title='负责专员' width="120" align="center"></GridColumn>
                             <GridColumn field='finishTime' title='完成时间' width="150" align="center"></GridColumn>
-                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>
-                            <GridColumn title='合计金额' width="100" align="right">
+<!--                            <GridColumn field='commodityNum' title='总数量' width="60" align="center"></GridColumn>-->
+                            <GridColumn title='订货金额' width="100" align="right">
                                 <template slot="body" slot-scope="scope">
-                                    {{ toMoney(scope.row.jdPrice, '') }}
+                                    {{ toMoney(scope.row.total, '') }}
                                 </template>
                             </GridColumn>
                             <GridColumn title='结算金额' width="100" align="right">
@@ -79,10 +79,10 @@
                                 </template>
                             </GridColumn>
                             <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
-                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>
+<!--                            <GridColumn field='telephone' title='固定电话' width="120" align="center"></GridColumn>-->
                             <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
-                            <GridColumn field='address' title='收货地址' width="320" align="left"></GridColumn>
-                          </DataGrid>
+                            <GridColumn field='address' title='收货地址' align="left"></GridColumn>
+                        </DataGrid>
                     </div>
                 </template>
             </DataGrid>
@@ -126,7 +126,7 @@ export default {
         }
     },
     components: {
-        filterList, selectOrganizationUser,viewTasks
+        filterList, selectOrganizationUser, viewTasks
     },
     created: function () {
         this.loadPage(this.pageNumber, this.pageSize);
@@ -136,6 +136,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("receiptApplicationForm/getQueryList", {
@@ -159,10 +161,14 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
-        loadItems(obj){
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
+        },
+        loadItems(obj) {
             let vm = this;
-            this.getData("receiptApplicationFormChild/getList", {pid:obj.id}, function (data) {
-                vm.$set(obj,'items',data);
+            this.getData("receiptApplicationFormChild/getList", {pid: obj.id}, function (data) {
+                vm.$set(obj, 'items', data);
             })
         },
         add() {
@@ -192,37 +198,37 @@ export default {
             if (row.processStatus) {
                 return {background: "#e1ffe0"};
             }
-            if (row.processId>0 && !row.processStatus) {
+            if (row.processId > 0 && !row.processStatus) {
                 return {background: "#fcf5d1"};
             }
             return null;
         },
         getItemRowCss(row) {
-            if (parseFloat(row.settlement)===parseFloat(row.jdPrice)) {
+            if (parseFloat(row.settlement) === parseFloat(row.jdPrice)) {
                 return {background: "#e1ffe0"};
             }
             return null;
         },
-        removeObj(){
+        removeObj() {
             let vm = this;
             this.confirm("删除申请单,确认吗?", function () {
-                vm.getData("receiptApplicationForm/delete", {id:vm.obj.id}, function (data) {
-                    vm.obj={};
+                vm.getData("receiptApplicationForm/delete", {id: vm.obj.id}, function (data) {
+                    vm.obj = {};
                     vm.msg('操作成功');
                     vm.loadPage(vm.pageNumber, vm.pageSize);
                 })
             })
         },
-        view(){
+        view() {
             this.$refs.viewTasksDlg.open();
             this.$refs.viewTasksCom.loadList();
         },
-        cancel(){
+        cancel() {
             let vm = this;
             this.confirm("撤销流程,确认吗?", function () {
-                vm.getData("receiptApplicationForm/cancelProcess", {id:vm.obj.id}, function (data) {
+                vm.getData("receiptApplicationForm/cancelProcess", {id: vm.obj.id}, function (data) {
                     vm.msg('流程已撤销成功');
-                    vm.obj={};
+                    vm.obj = {};
                     vm.loadPage(vm.pageNumber, vm.pageSize);
                 })
             })

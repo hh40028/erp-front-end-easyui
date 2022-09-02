@@ -2,7 +2,7 @@
     <Layout bodyCls="f-column" :border="false">
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
-<!--                <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>-->
+                <!--                <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>-->
                 <LinkButton iconCls="icon-ok" class="m-r-5" :disabled="!obj.id" :plain="true" @click="viewSaleorder">查看</LinkButton>
                 <input class="m-t-5" type="checkbox" v-model="isRedback"
                        @change="loadPage(pageNumber, pageSize)" id="ck">
@@ -125,6 +125,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             let url = 'saleorder/getQueryList';

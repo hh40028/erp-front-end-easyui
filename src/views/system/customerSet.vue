@@ -5,7 +5,7 @@
                 <LinkButton iconCls="icon-add" :plain="true" @click="add">新建</LinkButton>
                 <LinkButton iconCls="icon-edit" :plain="true" @click="edit" :disabled="!obj.id">编辑</LinkButton>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -29,10 +29,10 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn field="name" title="客户名称" align="center"></GridColumn>
-                <GridColumn field="consigneeName" title="联系人" align="center"></GridColumn>
-                <GridColumn field="phoneNumber" title="手机号码" align="center"></GridColumn>
-                <GridColumn field="telephone" title="固定电话" align="center"></GridColumn>
+                <GridColumn field="name" title="客户名称" width="220" align="left"></GridColumn>
+                <GridColumn field="consigneeName" title="联系人" width="120" align="center"></GridColumn>
+                <GridColumn field="phoneNumber" title="手机号码" width="120" align="center"></GridColumn>
+                <GridColumn field="telephone" title="固定电话" width="120" align="center"></GridColumn>
                 <GridColumn field="address" title="地址" align="left"></GridColumn>
             </DataGrid>
         </LayoutPanel>
@@ -100,6 +100,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("customer/getQueryList", {
@@ -115,12 +117,16 @@ export default {
                     vm.data.push(e);
                 })
                 vm.loading = false;
-                vm.obj={};
+                vm.obj = {};
             })
         },
         filter(filterString) {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
+        },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
         },
         selectItem(obj) {
             this.obj = this.clone(obj);
@@ -139,7 +145,7 @@ export default {
                 vm.loadPage(vm.pageNumber, vm.pageSize);
             })
         },
-        changeStatus(obj){
+        changeStatus(obj) {
             let vm = this;
             this.getData("customer/save", obj, function (data) {
                 vm.loadPage(vm.pageNumber, vm.pageSize);

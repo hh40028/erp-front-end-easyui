@@ -3,7 +3,7 @@
         <LayoutPanel region="north" :border="false">
             <Panel :bodyStyle="{padding:'8px'}" :border="false">
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -35,6 +35,7 @@
 
 <script>
 import filterList from '@/components/filterList.vue';
+
 export default {
     name: "app",
     data() {
@@ -58,6 +59,8 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
             this.$root.getData("customer/getAllQueryList", {
@@ -81,7 +84,11 @@ export default {
         filter(filterString) {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
-        }
+        },
+        changePageSize(value){
+            this.pageSize=value;
+            this.loadPage(1, this.pageSize);
+        },
     }
 }
 </script>

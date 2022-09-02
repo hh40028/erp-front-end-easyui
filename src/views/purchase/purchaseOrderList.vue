@@ -12,8 +12,17 @@
                     <LinkButton :selected="deliveryStatus===1" @click="changeDeliveryStatus(1)">未发货</LinkButton>
                     <LinkButton :selected="deliveryStatus===2" @click="changeDeliveryStatus(2)">已发货</LinkButton>
                 </ButtonGroup>
+
+                <TextBox placeholder="筛选供应商..." v-model="supplierName" style="width:350px;margin-left: 30px" @focus="openDlg">
+                    <Addon align="left">
+                        <LinkButton :btnStyle="{borderRadius:0,borderWidth:'0 1px 0 0',width:'60px',height:'30px'}">供应商</LinkButton>
+                    </Addon>
+                    <Addon>
+                        <span class="textbox-icon icon-clear" v-if="supplierName" @click="clearSupplier"></span>
+                    </Addon>
+                </TextBox>
                 <div class="pull-right">
-                    <filterList @filterLoad="filter"></filterList>
+                    <filterList @filterLoad="filter" :page-size="pageSize" @changePageSize="changePageSize"></filterList>
                 </div>
             </Panel>
         </LayoutPanel>
@@ -34,7 +43,6 @@
                         {{ scope.rowIndex + 1 }}
                     </template>
                 </GridColumn>
-                <GridColumn :expander="true" width="30"></GridColumn>
                 <GridColumn title='结算' width="40" align="center">
                     <template slot="body" slot-scope="scope">
                         <span style="color: green" v-if="scope.row.settlementOrderId>0">已结</span>
@@ -50,10 +58,10 @@
                         <img v-if="!scope.row.offlineOrder" src="../../assets/images/jd.jpg" style="height: 16px;line-height: 32px;border-radius: 3px">
                     </template>
                 </GridColumn>
-                <GridColumn field='number' title='单据编号' width="140" align="center"></GridColumn>
+                <GridColumn field='orderNumber' title='单据编号' width="140" align="center"></GridColumn>
                 <GridColumn field='supplierName' title='供应商' width="120" align="left"></GridColumn>
                 <GridColumn field='customOrderId' title='订单编号' width="150" align="center"></GridColumn>
-                <GridColumn field='wareid' title='商品编号' width="120" align="center"></GridColumn>
+                <GridColumn field='sku' title='商品编号' width="120" align="center"></GridColumn>
                 <GridColumn field='commodityName' title='商品名称' width="120" align="left"></GridColumn>
                 <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
                 <GridColumn field="cost" title='单价' width="80" align="right">
@@ -71,68 +79,30 @@
                         {{ toMoney(scope.row.settlement, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn field='createTime' title='递交时间' width="150" align="center"></GridColumn>
+                <GridColumn field='submitTime' title='递交时间' width="150" align="center"></GridColumn>
                 <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
                 <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
                 <GridColumn field='address' title='收货地址' width="120" align="left"></GridColumn>
                 <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
                 <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
-                <GridColumn field='deliveryTime' title='发货时间' width="150" align="center"></GridColumn>
-                <template slot="detail" slot-scope="scope">
-                    <div class="item f-row">
-                        <table class="table" style="width:100%">
-                            <tbody>
-                            <tr>
-                                <td class="text-right td">商品名称</td>
-                                <td class="text-left td" colspan="7">{{ scope.row.commodityName }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-right td">订单编号</td>
-                                <td class="text-left td">{{ scope.row.orderFormId }}</td>
-                                <td class="text-right td">商品编号</td>
-                                <td class="text-left td">{{ scope.row.wareid }}</td>
-                                <td class="text-right td">供应商</td>
-                                <td class="text-left td">{{ scope.row.supplierName }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-right td">商品数量</td>
-                                <td class="text-left td">{{ scope.row.wareNum }}</td>
-                                <td class="text-right td">商品单价</td>
-                                <td class="text-left td">{{ toMoney(scope.row.cost, '') }} 元</td>
-                                <td class="text-right td">合计金额</td>
-                                <td class="text-left td">{{ toMoney(scope.row.cost * scope.row.wareNum, '') }} 元</td>
-                                <td class="text-right td">结算金额</td>
-                                <td class="text-left td">{{ toMoney(scope.row.settlement, '') }} 元</td>
-
-                            </tr>
-                            <tr>
-                                <td class="text-right td">收货人</td>
-                                <td class="text-left td">{{ scope.row.consigneeName }}</td>
-                                <td class="text-right td">手机号码</td>
-                                <td class="text-left td">{{ scope.row.phone }}</td>
-                                <td class="text-right td">收货地址</td>
-                                <td class="text-left td" colspan="3">{{ scope.row.address }}</td>
-                            </tr>
-                            <tr>   <td class="text-right td">递交时间</td>
-                                <td class="text-left td">{{ scope.row.createTime }}</td>
-                                <td class="text-right td">物流公司</td>
-                                <td class="text-left td">{{ scope.row.logisticsCompanyName }}</td>
-                                <td class="text-right td">物流单号</td>
-                                <td class="text-left td">{{ scope.row.logisticsNumber }}</td>
-                                <td class="text-right td">发货时间</td>
-                                <td class="text-left td">{{ scope.row.deliveryTime }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </template>
+                <GridColumn field='shippingTime' title='发货时间' width="150" align="center"></GridColumn>
+                <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
             </DataGrid>
         </LayoutPanel>
+        <Dialog ref="selectSupplierDlg" closed
+                :title="'选择供应商'"
+                :draggable="true"
+                :resizable="true"
+                :dialogStyle="{width:'50%',height:'60%'}"
+                :modal="true">
+            <selectSupplier @selectSupplier="selectSupplier" :hide-add="true"></selectSupplier>
+        </Dialog>
     </Layout>
 </template>
 
 <script>
 import filterList from '@/components/filterList.vue';
+import selectSupplier from '@/components/selectSupplier.vue';
 
 export default {
     name: "app",
@@ -149,21 +119,27 @@ export default {
             logisticsCompanyGroup: [],
             allSelected: false,
             deliveryStatus: 0,
-            settlement: 0
+            settlement: 0,
+            supplierid: 0,
+            supplierName: ''
         }
     },
     components: {
-        filterList
+        filterList, selectSupplier
     },
     created: function () {
         this.loadPage(this.pageNumber, this.pageSize);
     },
     methods: {
         changeSettlement(s) {
+            this.total = 0;
+            this.pageNumber = 1;
             this.settlement = s;
             this.loadPage(this.pageNumber, this.pageSize);
         },
         changeDeliveryStatus(s) {
+            this.total = 0;
+            this.pageNumber = 1;
             this.deliveryStatus = s;
             this.loadPage(this.pageNumber, this.pageSize);
         },
@@ -171,16 +147,19 @@ export default {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
             this.loading = true;
             let vm = this;
-            this.$root.getData("supplierPurchaseOrder/getPurchaseList", {
+            this.$root.getData("orderFormItem/getPurchaseList", {
                 limit: pageSize,
                 offset: pageSize * (pageNumber - 1),
                 sort: "id",
                 direction: "desc",
                 filterString: this.filterString,
-                deliveryStatus: this.deliveryStatus,
-                settlement: this.settlement
+                supplierid: this.supplierid,
+                settlementStatus: this.settlement,
+                deliveryStatus: this.deliveryStatus
             }, function (data) {
                 vm.total = data.total;
                 vm.data = [];
@@ -196,6 +175,24 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
+        changePageSize(value) {
+            this.pageSize = value;
+            this.loadPage(1, this.pageSize);
+        },
+        openDlg() {
+            this.$refs.selectSupplierDlg.open();
+        },
+        selectSupplier(obj) {
+            this.$refs.selectSupplierDlg.close();
+            this.supplierid = obj.id;
+            this.supplierName = obj.name;
+            this.loadPage(1, this.pageSize);
+        },
+        clearSupplier() {
+            this.supplierid = 0;
+            this.supplierName = '';
+            this.loadPage(1, this.pageSize);
+        }
     }
 }
 </script>
